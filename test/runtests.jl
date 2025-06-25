@@ -147,6 +147,41 @@ include("Aqua.jl")
         @test all( species(va, :) .== species(sys, :) )
         @test all( position(va, :) .≈ position(sys, :) )
         @test all( velocity(va, :) .≈ velocity(sys, :) )
+        @test hasatomkey(va, :charge)
+        @test cell(va) isa IsolatedCell
+        @test all( periodicity(va) .== (false, false, false) )
+        @test all( cell_vectors(va) .≈ cell_vectors(cell(sys)) )
+        @test mass(va, 2) ≈ mass(sys, 2)
+        @test species(va, 2) === species(sys, 2)
+        @test position(va, 2) ≈ position(sys, 2)
+        @test velocity(va, 2) ≈ velocity(sys, 2)
+
+        sa = SimpleAtom( va[1] ; mark=4 )
+        @test species(sa) === Species(va[1])
+        @test position(sa) ≈ position(va[1])
+        @test velocity(sa) ≈ velocity(va[1])
+        @test mass(sa) == mass(va[1])
+        @test haskey(sa, :mark)
+        @test sa[:mark] == 4
+
+        at = AtomsBase.Atom( :H, [0.0, 0.0, 0.0]u"Å", charge=-1.0u"q" )
+        sa = SimpleAtom(at)
+        @test species(sa) === species(at)
+        @test position(sa) ≈ position(at)
+        @test haskey(sa, :charge)
+        @test sa[:charge] == -1.0u"q"
+
+        @test AtomsBase.n_dimensions(sa) == 3
+
+        sp = ChemicalSpecies(:C13; atom_name=:myC)
+        sa = SimpleAtom(sp, [1.0, 2.0, 3.0]u"Å")
+        @test species(sa) === sp
+        @test AtomsBase.atom_name(sa) == :myC
+        @test AtomsBase.atomic_symbol(sa) == :C13
+        @test AtomsBase.element_symbol(sa) == :C
+        @test AtomsBase.atomic_number(sa) == 6
+        @test AtomsBase.atomic_mass(sa) ≈ AtomsBase.mass(sp) 
+
         sa = SimpleAtom( :H, [0.0, 0.0, 0.0]u"Å" )
         @test species(sa) === ChemicalSpecies(:H)
         @test position(sa) ≈ [0.0, 0.0, 0.0]u"Å"

@@ -4,7 +4,7 @@ New atom structure `SimpleAtom` is a bits type structure that aims to be a simpl
 
 You can create `SimpleAtom` in one of the following ways
 
-```julia
+```@repl
 SimpleAtom(:H, [0.0, 0.0, 0.0]u"Å")
 SimpleAtom( 1, [0.0, 0.0, 0.0]u"Å") # same as above
 SimpleAtom(:O, [1.0, 0.0, 0.0]u"Å", [0.1, 0.0, 0.0]u"Å/s"; mass = 16.0u"u", charge = -1.0u"q")
@@ -12,28 +12,40 @@ SimpleAtom(ChemicalSpecies(:H), [0.0, 0.0, 0.0]u"Å")
 SimpleAtom( :O => [1.0, 0.0, 0.0]u"Å" )
 ```
 
+You can add extra atomkeys to an existing atom, by creating a new `SimpleAtom` and adding a keyword argument
 
-Comparison to AtomsBase `Atom`
-```julia-repl
-julia> ab_atom = AtomsBase.Atom( :O, [1.0, 0.0, 0.0]u"Å" )
-Atom(O, Z = 8, m = 15.999 u):
-    position          : [1,0,0]u"Å"
-    species           : O
+```@example
+sa = SimpleAtom(:H, [0.0, 0.0, 0.0]u"Å")
+SimpleAtom(sa; charge = 1.0u"q" ) # same as sa but with added charge
+```
 
-julia> sa = SimpleAtom( :O, [1.0, 0.0, 0.0]u"Å" )
-SimpleAtom(O, Z = 8, m = 15.999 u):
-    position          : [1,0,0]u"Å"
-    species           : O
 
-julia> Base.summarysize(ab_atom)
-456
+Compared to AtomsBase `Atom` [`SimpleAtom`](@ref) is smaller in size and is also bitstype 
 
-julia> Base.summarysize(sa)
-32
+```@repl
+ab_atom = AtomsBase.Atom( :O, [1.0, 0.0, 0.0]u"Å" )
+sa = SimpleAtom( :O, [1.0, 0.0, 0.0]u"Å" )
+Base.summarysize(ab_atom)
+Base.summarysize(sa)
+isbits(ab_atom)
+isbits(sa)
+```
 
-julia> isbits(ab_atom)
-false
 
-julia> isbits(sa)
-true
+## Vector of SimpleAtoms
+
+Vector os SimpleAtoms has basic AtomsBase interface implemented
+
+```@repl
+va = [ SimpleAtom(i, i * ones(3)u"Å") for i in 1:5 ]
+
+species(va, 3)
+
+position(va, 4)
+
+mass(va, :)
+
+hasatomkey(va, :velocity)
+
+cell(va)
 ```
