@@ -157,7 +157,7 @@ include("Aqua.jl")
         @test velocity(va, 2) ≈ velocity(sys, 2)
 
         sa = SimpleAtom( va[1] ; mark=4 )
-        @test species(sa) === Species(va[1])
+        @test species(sa) === species(va[1])
         @test position(sa) ≈ position(va[1])
         @test velocity(sa) ≈ velocity(va[1])
         @test mass(sa) == mass(va[1])
@@ -180,7 +180,7 @@ include("Aqua.jl")
         @test AtomsBase.atomic_symbol(sa) == :C13
         @test AtomsBase.element_symbol(sa) == :C
         @test AtomsBase.atomic_number(sa) == 6
-        @test AtomsBase.atomic_mass(sa) ≈ AtomsBase.mass(sp) 
+        @test AtomsBase.mass(sa) ≈ AtomsBase.mass(sp) 
 
         sa = SimpleAtom( :H, [0.0, 0.0, 0.0]u"Å" )
         @test species(sa) === ChemicalSpecies(:H)
