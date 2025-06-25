@@ -15,5 +15,5 @@ makedocs(
 
 
 deploydocs(
-    repo = "github.com/JuliMolSim/AtomsSystems.jl.git",
+    repo = "JuliaMolSim/AtomsSystems.jl",
 )
