@@ -9,6 +9,9 @@ makedocs(
     modules = [AtomsSystems],
     pages = [
         "Home" => "index.md",
+        "Atoms" => "atoms.md",
+        "Systems" => "systems.md",
+        "Utilities" => "utilities.md",
     ],
     checkdocs = :public,
 )
