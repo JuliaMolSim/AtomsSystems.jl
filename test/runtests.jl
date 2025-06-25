@@ -150,7 +150,7 @@ include("Aqua.jl")
         @test hasatomkey(va, :charge)
         @test cell(va) isa IsolatedCell
         @test all( periodicity(va) .== (false, false, false) )
-        @test all( cell_vectors(va) .≈ cell_vectors(cell(sys)) )
+        @test all( cell_vectors(va) .≈ cell_vectors(cell(va)) )
         @test mass(va, 2) ≈ mass(sys, 2)
         @test species(va, 2) === species(sys, 2)
         @test position(va, 2) ≈ position(sys, 2)
