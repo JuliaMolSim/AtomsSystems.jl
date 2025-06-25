@@ -14,7 +14,6 @@ export AtomicPropertySystem
 export AtomicPropertySystemView
 export CellSystem
 export CellSystemView
-export GeneralSystem
 export SimpleAtom
 export SimpleSystem
 export SimpleSystemView
