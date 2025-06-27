@@ -90,6 +90,9 @@ function SimpleAtom(sa::SimpleAtom; kwargs...)
     tmp = Dict{Symbol, Any}( pairs(sa) )
     foreach( pairs(kwargs) ) do (k,v)
         tmp[k] = v
+        if k == :velocity || k == :position
+            tmp[k] = SVector(v...)
+        end
     end
     return SimpleAtom( NamedTuple( tmp ) )
 end

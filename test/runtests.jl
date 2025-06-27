@@ -241,7 +241,54 @@ include("Aqua.jl")
         @test length(sys) == length(rsys)
         @test all( position(sys, :) .≈ position(rsys, :) )
         @test all( species(sys, :) .=== species(rsys, :) )
-                                              
+    end
+    @testset "Get Started test" begin
+        sys = generic_system"""
+            O     -2.1   0.6    0.0
+            H     -1.4   0.4    0.6
+            H     -1.8   1.3   -0.6
+        """
+        sys = generic_system(sys; cell_vectors = [
+            [5., 0., 0.]u"Å",
+            [0., 5., 0.]u"Å",
+            [0., 0., 5.]u"Å"],
+        )
+        sys = generic_system(sys; periodicity=(false, true, false))
+        sys = generic_system(sys; energy=1.2u"eV", label="my water") 
+        
+        @test length(sys) == 3
+        @test species(sys, 1) === ChemicalSpecies(:O)
+        @test species(sys, 2) === ChemicalSpecies(:H)
+        @test species(sys, 3) === ChemicalSpecies(:H)
+
+        @test periodicity(sys) == (false, true, false)
+        @test all( cell_vectors(sys) .≈ [
+            [5.0, 0.0, 0.0]u"Å",
+            [0.0, 5.0, 0.0]u"Å",
+            [0.0, 0.0, 5.0]u"Å",
+        ] )
+        @test sys[:energy] ≈ 1.2u"eV"
+        @test sys[:label] == "my water"
+
+
+        atoms = [
+            SimpleAtom(:O, [-2.1, 0.6, 0.0]u"Å"; mass=16.5u"u" )
+            SimpleAtom(:H, [-1.4, 0.4, 0.6]u"Å"; mass=2.3u"u"  )
+            SimpleAtom(:H, [-1.8, 1.3, -0.6]u"Å"; mass=3.3u"u" )
+        ]
+        atoms = [
+            SimpleAtom( atoms[1]; velocity=[0.1, 0.2, 0.0]u"Å/fs" , charge=-1.0u"q" )
+            SimpleAtom( atoms[2]; velocity=[-0.2, 0.0, 0.1]u"Å/fs", charge=1.0u"q"  )
+            SimpleAtom( atoms[3]; velocity=[0.0, -0.1, 0.2]u"Å/fs", charge=0.0u"q"  )
+        ]
+        sys = generic_system(atoms)
+        @test length(sys) == 3
+        @test species(sys, 1) === ChemicalSpecies(:O)
+        @test species(sys, 2) === ChemicalSpecies(:H)
+        @test species(sys, 3) === ChemicalSpecies(:H)
+        @test Set( atomkeys(sys) ) == Set( (:position, :species, :velocity, :mass, :charge) )
+        @test Set( atomkeys(sys) ) == Set( atomkeys(atoms) )
+
     end
     @testset "Utils" begin
         sys = SimpleSystem(ref.system)

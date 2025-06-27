@@ -53,6 +53,20 @@ end
 
 ## Generic builders
 
+function _parse_cell_vectors(cv::Vararg{AbstractVector{<:Unitful.Length}})
+    # make sure we have a square matrix
+    tmp = reduce(hcat, cv)
+    if isa(tmp, SMatrix)
+        return Tuple( x for x in eachcol(tmp) )
+    end
+    if size(tmp, 1) == size(tmp, 2)
+        D = size(tmp, 1)
+        tmp = SMatrix{D,D}( tmp )
+        return Tuple( x for x in eachcol(tmp) )
+    end
+    throw(ArgumentError("Cell vectors must be square matrix"))
+end
+
 """
     generic_system(sys::AbstractSystem; kwargs...)
 
@@ -84,16 +98,22 @@ function generic_system(sys::AbstractSystem; kwargs...)
     # Figure out do we need to update the cell
     new_cell = nothing
     if haskey(kwargs, :cell_vectors) && haskey(kwargs, :periodicity)
-        new_cell = PeriodicCell( cell_vectors=kwargs[:cell_vectors], periodicity=kwargs[:periodicity] )
+        cv = _parse_cell_vectors(kwargs[:cell_vectors]...)
+        new_cell = PeriodicCell( cell_vectors=cv, periodicity=kwargs[:periodicity] )
     elseif haskey(kwargs, :cell_vectors) && isa(cell(sys), PeriodicCell)
-        new_cell = PeriodicCell( cell_vectors=kwargs[:cell_vectors], periodicity=periodicity(sys) )
+        cv = _parse_cell_vectors(kwargs[:cell_vectors]...)
+        new_cell = PeriodicCell( cell_vectors=cv, periodicity=periodicity(sys) )
     elseif haskey(kwargs, :periodicity) && isa(cell(sys), PeriodicCell)
         new_cell = PeriodicCell( cell_vectors=cell_vectors(sys), periodicity=kwargs[:periodicity] )
     elseif haskey(kwargs, :cell)
         new_cell = kwargs[:cell]
     elseif isa(cell(sys), IsolatedCell) &&
-            ( haskey(kwargs, :cell_vectors) || haskey(kwargs, :periodicity))
-        throw( ArgumentError("Not enough information to update cell") )
+            ( haskey(kwargs, :cell_vectors) && !haskey(kwargs, :periodicity))
+        cm = _parse_cell_vectors(kwargs[:cell_vectors]...)
+        new_cell = PeriodicCell(cm, Tuple( true for _ in 1:length(cm) ) )
+    elseif isa(cell(sys), IsolatedCell) &&
+            ( haskey(kwargs, :periodicity) && !haskey(kwargs, :cell_vectors))
+            throw(ArgumentError("Cannot set periodicity without cell vectors"))
     end
 
     if isnothing(new_cell)
