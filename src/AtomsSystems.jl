@@ -20,6 +20,9 @@ export SimpleSystemView
 export SimpleVelocitySystem
 export SimpleVelocitySystemView
 
+# Macros
+export @generic_system_str
+
 
 # utilities
 export add_systems

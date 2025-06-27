@@ -12,10 +12,12 @@ AtomsBase.mass(sys::AbstractCompositeSystem, i) = AtomsBase.mass(sys.base_system
 AtomsBase.position(sys::AbstractCompositeSystem, i) =  position(sys.base_system, i)
 AtomsBase.species(sys::AbstractCompositeSystem, i) = AtomsBase.species(sys.base_system, i)
 AtomsBase.velocity(sys::AbstractCompositeSystem, i) =  AtomsBase.velocity(sys.base_system, i)
+AtomsBase.hasatomkey(sys::AbstractCompositeSystem, x::Symbol) = in(x, AtomsBase.atomkeys(sys) )
 
 
 Base.length(sys::AbstractCompositeSystem) = length(sys.base_system)
 Base.keys(::AbstractCompositeSystem) = (:cell_vectors, :periodicity)
+Base.haskey(sys::AbstractCompositeSystem, x::Symbol) = x in keys(sys)
 
 Base.getindex(sys::AbstractCompositeSystem, i::Int) = sys.base_system[i]
 Base.getindex(sys::AbstractCompositeSystem, ::Colon) = map(i->sys[i], 1:length(sys))

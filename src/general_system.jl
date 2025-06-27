@@ -286,11 +286,35 @@ function generic_system(sys::AbstractSystem, i; kwargs...)
 end
 
 function generic_system(sys::AbstractSystem, vspc::ChemicalSpecies...; kwargs...)
-    tmp = sum( vspc ) do spc
-        CellSystem(sys, spc)
-    end
+    tmp = CellSystem(sys, vspc...)
     if length(kwargs) > 0
         return GeneralSystem(tmp; kwargs...)
     end
     return tmp
 end
+
+
+
+##
+
+macro generic_system_str(input::AbstractString)
+    atoms = []
+    for line in split(input, '\n')
+        line = strip(line)
+        parts = split(line)
+        if isempty(line) || line[1] == '#'
+            continue  # Skip empty lines or comments
+        end
+        if length(parts) < 2
+            throw(ArgumentError("Each line must contain at least a species and a position"))
+        end
+        spc = (ChemicalSpecies ∘ Symbol)(parts[1])
+        pos = [ parse(Float64, word) for word in parts[2:end] ]
+        push!(atoms, (species=spc, position=pos))
+    end
+
+    return quote
+        generic_system([SimpleAtom(spc, pos...) for (spc, pos) in $(atoms)])
+    end
+end
+
