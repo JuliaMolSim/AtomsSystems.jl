@@ -43,6 +43,19 @@ struct SimpleAtom{D, TD, TP}
     end
 end
 
+
+function SimpleAtom(spc::AtomsBase.AtomId, r1::T, r::Vararg{T}; kwargs...) where {T<:Unitful.Length}
+    r = SVector(r1, r...)
+    spc = ChemicalSpecies(spc)
+    return SimpleAtom(spc, r; kwargs...)  
+end
+
+function SimpleAtom(spc::AtomsBase.AtomId, r1::Real, r::Vararg{Real}; kwargs...)
+    r = SVector(Float64(r1), Float64.(r)...) * u"Å"
+    spc = ChemicalSpecies(spc)
+    return SimpleAtom(spc, r; kwargs...)    
+end
+
 function SimpleAtom(
     spc::ChemicalSpecies, 
     r::AbstractVector{<:Unitful.Length}; 
@@ -77,6 +90,9 @@ function SimpleAtom(sa::SimpleAtom; kwargs...)
     tmp = Dict{Symbol, Any}( pairs(sa) )
     foreach( pairs(kwargs) ) do (k,v)
         tmp[k] = v
+        if k == :velocity || k == :position
+            tmp[k] = SVector(v...)
+        end
     end
     return SimpleAtom( NamedTuple( tmp ) )
 end

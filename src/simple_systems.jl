@@ -27,12 +27,13 @@ mutable struct SimpleSystem{D, LU, TP} <: AbstractSimpleSystem{D, LU}
     end
 end
 
-function SimpleSystem(species::AbstractVector{ChemicalSpecies}, r::AbstractVector{<:AbstractVector})
+function SimpleSystem(species::AbstractVector{<:AtomsBase.AtomId}, r::AbstractVector{<:AbstractVector})
     tmp = map( x -> SVector(x...), r )
-    return SimpleSystem(species, tmp)
+    spc = map( x -> ChemicalSpecies(x), species )
+    return SimpleSystem(spc, tmp)
 end
 
-function SimpleSystem(species::ChemicalSpecies, pos::AbstractVector{<:Unitful.Length})
+function SimpleSystem(species::AtomsBase.AtomId, pos::AbstractVector{<:Unitful.Length})
     return SimpleSystem([species], [pos])
 end
 
@@ -44,8 +45,8 @@ end
 
 SimpleSystem(sys::Union{AbstractSystem, AtomsVector}) = SimpleSystem(sys, :)
 
-function SimpleSystem(ss::Union{AbstractSystem,AtomsVector}, spc::ChemicalSpecies)
-    i = species(ss, :) .== spc
+function SimpleSystem(ss::Union{AbstractSystem,AtomsVector}, spc::ChemicalSpecies...)
+    i = map( x -> x in spc, species(ss, :) )
     return SimpleSystem(ss, i)
 end
 
@@ -62,12 +63,9 @@ function Base.getindex(ss::AbstractSimpleSystem, x::Symbol)
 end
 
 
-Base.haskey(ss::AbstractSimpleSystem, x::Symbol) = in(x, keys(ss) )
-Base.keys(::AbstractSimpleSystem) = (:cell_vectors, :periodicity)
 Base.length(ss::AbstractSimpleSystem) = length(ss.species)
 
 AtomsBase.atomkeys(::SimpleSystem) = (:position, :species)
-AtomsBase.hasatomkey(ss::AbstractSimpleSystem, x::Symbol) = x in atomkeys(ss)
 AtomsBase.cell(::SimpleSystem{D, LU, TP}) where{D, LU, TP} = IsolatedCell(D, TP)
 
 
@@ -103,13 +101,14 @@ mutable struct SimpleVelocitySystem{D, LU, UV, TP, TV} <: AbstractSimpleSystem{D
 end
 
 function SimpleVelocitySystem(
-        species::AbstractVector{ChemicalSpecies}, 
+        species::AbstractVector{<:AtomsBase.AtomId}, 
         r::AbstractVector{<:AbstractVector}, 
         v::AbstractVector{<:AbstractVector}
     )
     tmp_r = map( x -> SVector(x...), r )
     tmp_v = map( x -> SVector(x...), v )
-    return SimpleVelocitySystem(species, tmp_r, tmp_v)
+    spc = map( x -> ChemicalSpecies(x), species )
+    return SimpleVelocitySystem(spc, tmp_r, tmp_v)
 end
 
 
@@ -128,15 +127,15 @@ SimpleVelocitySystem(sys::Union{AbstractSystem, AtomsVector}) = SimpleVelocitySy
 SimpleVelocitySystem(sys::SimpleVelocitySystem) = deepcopy(sys)
 
 function SimpleVelocitySystem(
-    species::ChemicalSpecies, 
+    species::AtomsBase.AtomId, 
     pos::AbstractVector{<:Unitful.Length}, 
     vel::AbstractVector{<:Unitful.Velocity}
 )
     return SimpleVelocitySystem([species], [pos], [vel])
 end
 
-function SimpleVelocitySystem(ss::Union{AbstractSystem,AtomsVector}, spc::ChemicalSpecies)
-    i = species(ss, :) .== spc
+function SimpleVelocitySystem(ss::Union{AbstractSystem,AtomsVector}, spc::ChemicalSpecies...)
+    i = map( x -> x in spc, species(ss, :) )
     return SimpleVelocitySystem(ss, i)
 end
 

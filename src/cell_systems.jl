@@ -1,4 +1,20 @@
+"""
+    CellSystem{D, LU, TB, TC}
 
+A system that represents a collection of atoms in a `PeriodicCell`.
+
+Not intended to be called directly. Instead, use `generic_system` to build systems.
+
+# Type Parameters
+- `D`: Dimension of the system (e.g., 2 or 3).
+- `LU`: Unit of length for positions.
+- `TB`: Type of the base system.
+- `TC`: Type of the cell, which is a `PeriodicCell{D}`.
+
+# Fields
+- `base_system`: The base system, which is either an `AtomicPropertySystem` or a `SimpleSystem` or a `SimpleVelocitySystem`.
+- `cell`: The periodic cell that defines the boundaries and periodicity of the system.  
+"""
 mutable struct CellSystem{D, LU, TB, TC} <: AbstractCompositeSystem{D, LU}
     base_system::TB
     cell::TC
@@ -14,8 +30,8 @@ function CellSystem(sys::Union{AbstractSystem,AtomsVector}, i)
     return CellSystem(base_sys, cell(sys))
 end
 
-function CellSystem(sys::Union{AbstractSystem,AtomsVector}, spc::ChemicalSpecies)
-    base_sys = AtomicPropertySystem(sys, spc)
+function CellSystem(sys::Union{AbstractSystem,AtomsVector}, spc::ChemicalSpecies...)
+    base_sys = AtomicPropertySystem(sys, spc...)
     if isa(cell(sys), IsolatedCell)
         return base_sys
     end
@@ -62,7 +78,7 @@ function AtomsBase.set_cell_vectors!(sys::CellSystem{D}, cell_matrix::SMatrix{D,
 end
 
 function AtomsBase.set_cell_vectors!(sys::CellSystem{D}, new_vectors::Vararg{ AbstractVector{<:Unitful.Length} , D}) where{D}
-    nc = reduce(hcat, new_vectors)
+    nc = SMatrix{D,D}( reduce(hcat, new_vectors) )
     return AtomsBase.set_cell_vectors!(sys, nc)
 end
 
@@ -72,6 +88,7 @@ function AtomsBase.set_periodicity!(sys::CellSystem{D}, periodicity::NTuple{D, B
 end
 
 function AtomsBase.set_cell!(sys::CellSystem{D}, cell::PeriodicCell{D}) where{D}
+    AtomsBase.set_periodicity!(sys, periodicity(cell))
     AtomsBase.set_cell_vectors!(sys, cell_matrix(cell))
     return sys
 end

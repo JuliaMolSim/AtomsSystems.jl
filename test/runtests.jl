@@ -17,7 +17,31 @@ include("Aqua.jl")
         @test all( species(sys, :) .=== species( ref.system, :) )
         @test isa(cell(sys), IsolatedCell)
         @test all( sys[:periodicity] .== (false, false, false) )
-        @test_throws KeyError sys[:dummy] 
+        @test_throws KeyError sys[:dummy]
+        @test haskey(sys, :cell_vectors)
+        @test all( x -> in(x, (:position, :species)), atomkeys(sys) )
+        @test hasatomkey(sys, :velocity) == false
+
+        ss = SimpleSystem(:H, [0.0, 0.0, 0.0]u"Å")
+        @test species(ss,1) === ChemicalSpecies(:H)
+        @test position(ss, 1) ≈ [0.0, 0.0, 0.0]u"Å"
+        @test length(ss) == 1
+        @test element_symbol(ss, 1) == :H
+
+        ss = SimpleSystem(sys, ChemicalSpecies(:H))
+        @test length(ss) == count( species(sys, :) .== ChemicalSpecies(:H) )
+        @test all( species(ss, :) .== ChemicalSpecies(:H) )
+
+        ss = SimpleSystem(sys, ChemicalSpecies(:H), ChemicalSpecies(:He))
+        @test length(ss) == count( species(sys, :) .== ChemicalSpecies(:H) ) +
+                            count( species(sys, :) .== ChemicalSpecies(:He) )
+        
+        ss = SimpleSystem(sys)
+        deleteat!(ss, 3)
+        @test length(ss) == length(sys) - 1
+        @test all( position(ss, 3) .≈ position(sys, 4) )
+        @test species(ss, 3) === species(sys, 4)
+        
     end
     @testset "SimpleVelocitySystem" begin
         sys = SimpleVelocitySystem(ref.system)
@@ -27,22 +51,79 @@ include("Aqua.jl")
         @test isa(cell(sys), IsolatedCell)
         @test all( sys[:periodicity] .== (false, false, false) )
         @test_throws KeyError sys[:dummy]
+        @test all( x -> in(x, (:position, :species, :velocity)), atomkeys(sys) )
+        @test hasatomkey(sys, :velocity) == true
+        AtomsBase.set_velocity!(sys, 1, [1.0, 2.0, 3.0]u"Å/s")
+        @test velocity(sys, 1) ≈ [1.0, 2.0, 3.0]u"Å/s"
+
+        sv = SimpleVelocitySystem(:H, [0.0, 0.0, 0.0]u"Å", [1.0, 2.0, 3.0]u"Å/s")
+        @test species(sv,1) === ChemicalSpecies(:H)
+        @test position(sv, 1) ≈ [0.0, 0.0, 0.0]u"Å"
+        @test velocity(sv, 1) ≈ [1.0, 2.0, 3.0]u"Å/s"
+        @test length(sv) == 1
+        @test element_symbol(sv, 1) == :H
+
+        sv = SimpleVelocitySystem(sys, ChemicalSpecies(:H))
+        @test length(sv) == count( species(sys, :) .== ChemicalSpecies(:H) )
+        @test all( species(sv, :) .== ChemicalSpecies(:H) )
+
+        sv = SimpleVelocitySystem(sys, ChemicalSpecies(:H), ChemicalSpecies(:He))
+        @test length(sv) == count( species(sys, :) .== ChemicalSpecies(:H) ) +
+                            count( species(sys, :) .== ChemicalSpecies(:He) )
+
+        sv = SimpleVelocitySystem(sys)
+        deleteat!(sv, 3)
+        @test length(sv) == length(sys) - 1
+        @test all( position(sv, 3) .≈ position(sys, 4) )
+        @test all( velocity(sv, 3) .≈ velocity(sys, 4) )
+        @test species(sv, 3) === species(sys, 4)
     end
     @testset "AtomicPropertySystem" begin
         sys = AtomicPropertySystem(ref.system)
         @test all( position(sys, :) .≈ position( ref.system, :) )
         @test all( velocity(sys, :) .≈ velocity( ref.system, :) )
         @test all( species(sys, :) .=== species( ref.system, :) )
-        @test all( mass(sys, :) .== mass( ref.system, :) )
+        @test all( mass(sys, :) .≈ mass( ref.system, :) )
         @test isa(cell(sys), IsolatedCell)
         @test all( sys[:periodicity] .== (false, false, false) )
         @test_throws KeyError sys[:dummy]
         @test all( x-> hasatomkey(sys, x), keys(ref.atprop) )
         @test all( x-> haskey(ref.atprop, x), atomkeys(sys) )
+        @test keys(sys) == (:cell_vectors, :periodicity)
         for (k,v) in pairs(ref.atprop)
             sys_val = [ x[k] for x in sys ]
             @test all( sys_val .== v)
         end
+
+        ss = AtomicPropertySystem(sys[:])
+        @test all( position(ss, :) .≈ position(sys, :) )
+        @test all( velocity(ss, :) .≈ velocity(sys, :) )
+        @test all( species(ss, :) .=== species(sys, :) )
+        @test all( mass(ss, :) .≈ mass(sys, :) )
+
+        sv = SimpleVelocitySystem(sys)
+        ss = AtomicPropertySystem(sv)
+        @test all( position(ss, :) .≈ position(sv, :) ) 
+        @test all( velocity(ss, :) .≈ velocity(sv, :) )
+        @test all( species(ss, :) .=== species(sv, :) )
+
+        ss = AtomicPropertySystem(sv, 1:2)
+        @test all( position(ss, :) .≈ position(sv, 1:2) )
+        @test all( velocity(ss, :) .≈ velocity(sv, 1:2) )
+        @test all( species(ss, :) .=== species(sv, 1:2) )
+
+        ss = AtomicPropertySystem(sv, ChemicalSpecies(:H))
+        @test length(ss) == count( species(sv, :) .== ChemicalSpecies(:H) ) 
+        @test all( species(ss, :) .=== ChemicalSpecies(:H) )
+        
+        gsys = generic_system(ref.system)
+        ss = AtomicPropertySystem(gsys, ChemicalSpecies(:H))
+        @test length(ss) == count( species(gsys, :) .== ChemicalSpecies(:H) )
+        @test all( species(ss, :) .=== ChemicalSpecies(:H) )
+
+        ss = AtomicPropertySystem(gsys, ChemicalSpecies(:H), ChemicalSpecies(:He))  
+        @test length(ss) == count( species(gsys, :) .== ChemicalSpecies(:H) ) +
+                            count( species(gsys, :) .== ChemicalSpecies(:He) )
     end
     @testset "CellSystemSystem" begin
         sys = CellSystem(ref.system)
@@ -61,6 +142,41 @@ include("Aqua.jl")
             sys_val = [ x[k] for x in sys ]
             @test all( sys_val .== v)
         end
+
+
+        sc = CellSystem(sys, IsolatedCell(3))
+        @test isa(sc, AtomsSystems.AbstractIsolatedSystem)
+
+        sc = CellSystem(sys[1:2])
+        @test isa(sc, AtomsSystems.AbstractIsolatedSystem)
+        @test all( position(sc, :) .≈ position(sys, 1:2) )
+        @test all( species(sc, :) .=== species(sys, 1:2) )
+        @test all( mass(sc, :) .≈ mass(sys, 1:2) )
+
+        sc = CellSystem(sys, ChemicalSpecies(:H))
+        @test length(sc) == count( species(sys, :) .== ChemicalSpecies(:H) )
+        @test all( species(sc, :) .=== ChemicalSpecies(:H) )
+
+        sc = CellSystem(sys, ChemicalSpecies(:H), ChemicalSpecies(:He))
+        @test length(sc) == count( species(sys, :) .== ChemicalSpecies(:H) ) +
+                            count( species(sys, :) .== ChemicalSpecies(:He) )
+
+        sc = CellSystem(sys)
+        translate_system!(sc, [1.0, 2.0, 3.0]u"Å")
+        ts = add_systems(sys, sc)
+        length(ts) == 2*length(sys)
+        @test all( position(ts, length(sys)+1:2*length(sys)) .≈ position(sc, :) )
+
+        sc = CellSystem(sys)
+        AtomsBase.set_periodicity!(sc, (true, true, true))
+        @test all( periodicity(sc) .== (true, true, true) )
+        AtomsBase.set_cell_vectors!(sc, [1.0, 0.0, 0.0]u"Å", [0.0, 1.0, 0.0]u"Å", [0.0, 0.0, 1.0]u"Å")
+        cv = cell_vectors(sc)
+        @test cv[1] ≈ [1.0, 0.0, 0.0]u"Å"
+        @test cv[2] ≈ [0.0, 1.0, 0.0]u"Å"
+        @test cv[3] ≈ [0.0, 0.0, 1.0]u"Å"
+
+
     end
     @testset "GeneralSystem" begin
         sys = generic_system(ref.system)
@@ -81,6 +197,98 @@ include("Aqua.jl")
         @test all( x-> haskey(ref.sysprop, x), keys(sys) )
         @test all( [all(sys[k] .== v) for (k,v) in pairs(ref.sysprop)] )
         @test_throws KeyError sys[:dummy]
+
+        sys = generic_system"""
+            H 0.0 0.0 0.0
+            He 1.0 2.0 3.0
+            O 4.0 5.0 6.0
+        """
+        @test length(sys) == 3
+        @test species(sys, 1) === ChemicalSpecies(:H)
+        @test position(sys, 1) ≈ [0.0, 0.0, 0.0]u"Å"
+        @test species(sys, 2) === ChemicalSpecies(:He)
+        @test position(sys, 2) ≈ [1.0, 2.0, 3.0]u"Å"
+        @test species(sys, 3) === ChemicalSpecies(:O)
+        @test position(sys, 3) ≈ [4.0, 5.0, 6.0]u"Å"
+
+        sys = generic_system([:H => [0.0, 0.0, 0.0]u"Å", :O => [1.0, 0.0, 0.0]u"Å"]; energy = 10.0u"eV")
+        @test length(sys) == 2
+        @test species(sys, 1) === ChemicalSpecies(:H)
+        @test position(sys, 1) ≈ [0.0, 0.0, 0.0]u"Å"
+        @test species(sys, 2) === ChemicalSpecies(:O)
+        @test position(sys, 2) ≈ [1.0, 0.0, 0.0]u"Å"
+        @test sys[:energy] ≈ 10.0u"eV"
+
+        rsys = generic_system(ref.system) 
+        sys = generic_system(rsys, 1:3; energy = 10.0u"eV")
+        @test length(sys) == 3
+        @test all( position(sys, :) .≈ position(rsys, 1:3) )
+        @test all( species(sys, :) .=== species(rsys, 1:3) )
+        @test all( mass(sys, :) .≈ mass(rsys, 1:3) )
+        @test sys[:energy] ≈ 10.0u"eV"
+
+        sys = generic_system(rsys, ChemicalSpecies(:H), ChemicalSpecies(:He))
+        @test length(sys) == count( species(rsys, :) .== ChemicalSpecies(:H) ) +
+                            count( species(rsys, :) .== ChemicalSpecies(:He) )  
+        
+        sys = generic_system(species(rsys, :), position(rsys, :), velocity(rsys, :))
+        @test length(sys) == length(rsys)
+        @test all( position(sys, :) .≈ position(rsys, :) )
+        @test all( velocity(sys, :) .≈ velocity(rsys, :) )
+        @test all( species(sys, :) .=== species(rsys, :) )
+
+        sys = generic_system(species(rsys, :), position(rsys, :))
+        @test length(sys) == length(rsys)
+        @test all( position(sys, :) .≈ position(rsys, :) )
+        @test all( species(sys, :) .=== species(rsys, :) )
+    end
+    @testset "Get Started test" begin
+        sys = generic_system"""
+            O     -2.1   0.6    0.0
+            H     -1.4   0.4    0.6
+            H     -1.8   1.3   -0.6
+        """
+        sys = generic_system(sys; cell_vectors = [
+            [5., 0., 0.]u"Å",
+            [0., 5., 0.]u"Å",
+            [0., 0., 5.]u"Å"],
+        )
+        sys = generic_system(sys; periodicity=(false, true, false))
+        sys = generic_system(sys; energy=1.2u"eV", label="my water") 
+        
+        @test length(sys) == 3
+        @test species(sys, 1) === ChemicalSpecies(:O)
+        @test species(sys, 2) === ChemicalSpecies(:H)
+        @test species(sys, 3) === ChemicalSpecies(:H)
+
+        @test periodicity(sys) == (false, true, false)
+        @test all( cell_vectors(sys) .≈ [
+            [5.0, 0.0, 0.0]u"Å",
+            [0.0, 5.0, 0.0]u"Å",
+            [0.0, 0.0, 5.0]u"Å",
+        ] )
+        @test sys[:energy] ≈ 1.2u"eV"
+        @test sys[:label] == "my water"
+
+
+        atoms = [
+            SimpleAtom(:O, [-2.1, 0.6, 0.0]u"Å"; mass=16.5u"u" )
+            SimpleAtom(:H, [-1.4, 0.4, 0.6]u"Å"; mass=2.3u"u"  )
+            SimpleAtom(:H, [-1.8, 1.3, -0.6]u"Å"; mass=3.3u"u" )
+        ]
+        atoms = [
+            SimpleAtom( atoms[1]; velocity=[0.1, 0.2, 0.0]u"Å/fs" , charge=-1.0u"q" )
+            SimpleAtom( atoms[2]; velocity=[-0.2, 0.0, 0.1]u"Å/fs", charge=1.0u"q"  )
+            SimpleAtom( atoms[3]; velocity=[0.0, -0.1, 0.2]u"Å/fs", charge=0.0u"q"  )
+        ]
+        sys = generic_system(atoms)
+        @test length(sys) == 3
+        @test species(sys, 1) === ChemicalSpecies(:O)
+        @test species(sys, 2) === ChemicalSpecies(:H)
+        @test species(sys, 3) === ChemicalSpecies(:H)
+        @test Set( atomkeys(sys) ) == Set( (:position, :species, :velocity, :mass, :charge) )
+        @test Set( atomkeys(sys) ) == Set( atomkeys(atoms) )
+
     end
     @testset "Utils" begin
         sys = SimpleSystem(ref.system)

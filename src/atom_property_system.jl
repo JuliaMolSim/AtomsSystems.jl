@@ -1,6 +1,25 @@
 
 
+"""
+    AtomicPropertySystem{D, LU, TB, TP, SM}
 
+A system that contains atomic properties in addition to the basic attributes of atoms. 
+
+This system is designed to work with `AbstractSimpleSystem` and allows for the storage of additional properties for each atom, such as custom mass, charge, or any other custom property.
+
+It is recommeded to use `generic_system` to create instances of this system.
+
+# Type Parameters
+- `D`: Dimension of the system (e.g., 2 or 3).
+- `LU`: Unit of length for positions.
+- `TB`: Type of the base system, either `SimpleSystem` or `SimpleVelocitySystem`.
+- `TP`: Type of the atomic properties (`NamedTuple`).
+- `SM`: Boolean indicating if the system has a custom mass property.
+
+# Fields
+- `base_system`: The base system, which is either a `SimpleSystem` or a `SimpleVelocitySystem`.
+- `atom_properties`: A vector of `TB` containing the properties of each atom.
+"""
 mutable struct AtomicPropertySystem{D, LU, TB, TP, SM} <: AbstractIsolatedSystem{D, LU}
     base_system::TB
     atom_properties::Vector{TP}
@@ -41,12 +60,23 @@ AtomicPropertySystem(sys::AbstractSimpleSystem, i)                     = SimpleV
 AtomicPropertySystem(sys::AbstractSimpleSystem, i::BitVector)          = SimpleVelocitySystem(sys, i)
 AtomicPropertySystem(sys::AbstractSimpleSystem)                        = SimpleVelocitySystem(sys)
 
+AtomicPropertySystem(sys::AbstractSimpleSystem, spc::ChemicalSpecies...)  = SimpleVelocitySystem(sys, spc...)
+
+function AtomicPropertySystem(ss::Union{AbstractSystem,AtomsVector}, spc::ChemicalSpecies...)
+    i = map( x -> x in spc, species(ss, :) )
+    return AtomicPropertySystem(ss, i)
+end
+
+function AtomicPropertySystem(sys::AtomicPropertySystem, spc::ChemicalSpecies...)
+    i = map( x -> x in spc, species(sys, :) )
+    return AtomicPropertySystem(sys, i)
+end
+
 function AtomicPropertySystem(sys::Union{AbstractSystem, AtomsVector}, i::BitVector)
     @argcheck length(sys) == length(i)
     j = (1:length(sys))[i]
     return AtomicPropertySystem(sys, j)
 end
-
 
 
 function Base.getindex(sys::AtomicPropertySystem, i::Int)
@@ -55,23 +85,15 @@ function Base.getindex(sys::AtomicPropertySystem, i::Int)
 end
 
 Base.getindex(sys::AtomicPropertySystem, x::Symbol) = sys.base_system[x]
-Base.keys(::AbstractIsolatedSystem) = (:cell_vectors, :periodicity)
-Base.length(sys::AbstractIsolatedSystem) = length(sys.base_system)
 
 function AtomsBase.atomkeys(sys::AbstractIsolatedSystem)
     base_keys = AtomsBase.atomkeys(sys.base_system)
     property_keys = _property_keys(sys)
-    # remove double mass
-    # This is most likely wrong. Need to fix it
-    if :mass in property_keys
-        base_keys = Tuple( x for x in base_keys if x !=:mass  )
-    end
+    # there is a risk of key collisions, but this is not a problem in practice
     return (base_keys..., property_keys...)
 end
 
-_property_keys(sys::AbstractIsolatedSystem) = keys(sys.atom_properties[1])
-_has_property_key(sys::AbstractIsolatedSystem, x::Symbol) = in(x, _property_keys(sys)) 
-
+_property_keys(sys::AbstractIsolatedSystem) = keys(sys.atom_properties[1]) 
 
 function AtomsBase.mass(sys::AtomicPropertySystem{D, LU, TB, TP, true}, i::Int) where {D, LU, TB, TP}
     return getindex(sys.atom_properties[i], :mass)

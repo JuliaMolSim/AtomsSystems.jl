@@ -53,6 +53,20 @@ end
 
 ## Generic builders
 
+function _parse_cell_vectors(cv::Vararg{AbstractVector{<:Unitful.Length}})
+    # make sure we have a square matrix
+    tmp = reduce(hcat, cv)
+    if isa(tmp, SMatrix)
+        return Tuple( x for x in eachcol(tmp) )
+    end
+    if size(tmp, 1) == size(tmp, 2)
+        D = size(tmp, 1)
+        tmp = SMatrix{D,D}( tmp )
+        return Tuple( x for x in eachcol(tmp) )
+    end
+    throw(ArgumentError("Cell vectors must be square matrix"))
+end
+
 """
     generic_system(sys::AbstractSystem; kwargs...)
 
@@ -84,16 +98,22 @@ function generic_system(sys::AbstractSystem; kwargs...)
     # Figure out do we need to update the cell
     new_cell = nothing
     if haskey(kwargs, :cell_vectors) && haskey(kwargs, :periodicity)
-        new_cell = PeriodicCell( cell_vectors=kwargs[:cell_vectors], periodicity=kwargs[:periodicity] )
+        cv = _parse_cell_vectors(kwargs[:cell_vectors]...)
+        new_cell = PeriodicCell( cell_vectors=cv, periodicity=kwargs[:periodicity] )
     elseif haskey(kwargs, :cell_vectors) && isa(cell(sys), PeriodicCell)
-        new_cell = PeriodicCell( cell_vectors=kwargs[:cell_vectors], periodicity=periodicity(sys) )
+        cv = _parse_cell_vectors(kwargs[:cell_vectors]...)
+        new_cell = PeriodicCell( cell_vectors=cv, periodicity=periodicity(sys) )
     elseif haskey(kwargs, :periodicity) && isa(cell(sys), PeriodicCell)
         new_cell = PeriodicCell( cell_vectors=cell_vectors(sys), periodicity=kwargs[:periodicity] )
     elseif haskey(kwargs, :cell)
         new_cell = kwargs[:cell]
     elseif isa(cell(sys), IsolatedCell) &&
-            ( haskey(kwargs, :cell_vectors) || haskey(kwargs, :periodicity))
-        throw( ArgumentError("Not enough information to update cell") )
+            ( haskey(kwargs, :cell_vectors) && !haskey(kwargs, :periodicity))
+        cm = _parse_cell_vectors(kwargs[:cell_vectors]...)
+        new_cell = PeriodicCell(cm, Tuple( true for _ in 1:length(cm) ) )
+    elseif isa(cell(sys), IsolatedCell) &&
+            ( haskey(kwargs, :periodicity) && !haskey(kwargs, :cell_vectors))
+            throw(ArgumentError("Cannot set periodicity without cell vectors"))
     end
 
     if isnothing(new_cell)
@@ -286,11 +306,35 @@ function generic_system(sys::AbstractSystem, i; kwargs...)
 end
 
 function generic_system(sys::AbstractSystem, vspc::ChemicalSpecies...; kwargs...)
-    tmp = sum( vspc ) do spc
-        CellSystem(sys, spc)
-    end
+    tmp = CellSystem(sys, vspc...)
     if length(kwargs) > 0
         return GeneralSystem(tmp; kwargs...)
     end
     return tmp
 end
+
+
+
+##
+
+macro generic_system_str(input::AbstractString)
+    atoms = []
+    for line in split(input, '\n')
+        line = strip(line)
+        parts = split(line)
+        if isempty(line) || line[1] == '#'
+            continue  # Skip empty lines or comments
+        end
+        if length(parts) < 2
+            throw(ArgumentError("Each line must contain at least a species and a position"))
+        end
+        spc = (ChemicalSpecies ∘ Symbol)(parts[1])
+        pos = [ parse(Float64, word) for word in parts[2:end] ]
+        push!(atoms, (species=spc, position=pos))
+    end
+
+    return quote
+        generic_system([SimpleAtom(spc, pos...) for (spc, pos) in $(atoms)])
+    end
+end
+
