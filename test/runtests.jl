@@ -1,6 +1,7 @@
 using AtomsBase
 using AtomsBaseTesting
 using AtomsSystems
+using LinearAlgebra: diagm, norm
 using Rotations
 using Unitful
 using Test
@@ -299,6 +300,10 @@ include("Aqua.jl")
         @test bond_angle(sys, 1, 2, 3) ≈ bond_angle(sys2, 1, 2, 3)
         @test dihedral_angle(sys, 1,2,3,4) ≈ dihedral_angle(sys2, 1,2,3,4)
         @test distance_vector(sys2, 1, 2) ≈ q * distance_vector(sys, 1, 2)
+        gsys = generic_system(sys; label="test rotation")
+        rotate_system!(gsys, q)
+        @test all( position(gsys, :) .≈ position(sys2, :) )
+
 
         # translation tests
         cms = center_of_mass(sys)
@@ -320,6 +325,7 @@ include("Aqua.jl")
         @test length(fp) == length(sys)
         fpm = fractional_coordinates_as_matrix(sys, :)
         @test size(fpm) == (3, length(sys))
+        @test fractional_coordinates_as_matrix(sys, 2) ≈ fractional_coordinates(sys, 2)
 
         clm = cell_matrix(sys)
         clv = cell_vectors(sys)
@@ -327,6 +333,14 @@ include("Aqua.jl")
         @test all( x -> all(x[1] .≈ x[2]), zip(clv, eachcol(clm)) )
         icell = inv_cell(sys)
         tmp = icell * clm
+
+        # isolated cell
+        sys = SimpleSystem(ref.system)
+        icell = inv_cell(sys)
+        @test diagm(ones(3))*unit(icell[1,1]) == icell
+        @test fractional_coordinates( cell(sys), position(sys, 1) ) ≈ fractional_coordinates(sys, 1)  
+        @test fractional_coordinates_as_matrix( cell(sys), position(sys, :) ) ≈ fractional_coordinates_as_matrix(sys, :)
+        
 
         # Repeat system
         csys = CellSystem(ref.system)
@@ -338,6 +352,11 @@ include("Aqua.jl")
         @test c1[1] ≈   c1[1]
         @test c2[2] ≈ 2*c1[2]
         @test c2[3] ≈ 3*c1[3]
+        sys333 = repeat(csys, 3)
+        c2 = cell_vectors(sys333)
+        @test c2[1] ≈ 3*c1[1]
+        @test c2[2] ≈ 3*c1[2]
+        @test c2[3] ≈ 3*c1[3]
         
         # wrap coordinates
         pbc = [true, true, true]
@@ -345,6 +364,30 @@ include("Aqua.jl")
         c = PeriodicCell(cell_vectors=cvec, periodicity=pbc)
         csys = CellSystem(SimpleSystem(ref.system), c)
         sys4 = wrap_coordinates!(csys)
+
+        # isolated cell wraps should not change coordinates
+        ssys = SimpleSystem(ref.system)
+        sys5 = wrap_coordinates!(ssys)
+        @test all( position(ssys, :) .≈ position(sys5, :) )
+        @test wrap_coordinates!( cell(ssys), position(ssys, 1) ) ≈ position(ssys, 1)
+
+        # distances
+        sys = SimpleSystem(ref.system)
+        @test distance_vector(sys, 1, 2) ≈ position(sys, 2) - position(sys, 1)
+        distance(sys, 1, 2) ≈ norm( position(sys, 2) - position(sys, 1) )
+        dis = distance(sys, sys)
+        @test dis[1, 2] ≈ distance(sys, 1, 2)
+        @test dis[2, 3] ≈ distance(sys[1:3], 2, 3)
+        @test dis[3, 1] ≈ distance(sys[1:3], 3, 1)
+
+        sys = generic_system(ref.system)
+        dis = distance(sys, 1, :)
+        @test dis[2] ≈ distance(sys, 1, 2)
+        @test dis[3] ≈ distance(sys, 1, 3)
+        dis2 = distance(sys, sys)
+        @test dis2[1, 3] ≈ distance(sys, 1, 3)
+        @test dis2[2, 4] ≈ distance(sys, 2, 4)
+         
     end
     @testset "SimpleAtom" begin
         sys = generic_system(ref.system)
