@@ -427,6 +427,12 @@ include("Aqua.jl")
             @test isa(cell(sv), IsolatedCell)
             @test all( sv[:] .== sys1[1:2] )
             @test_throws KeyError sv[:dummy]
+            @test Set( atomkeys(sv) ) == Set( (:species, :position) )
+            
+            sv = system_view(sys1, 1:4)
+            sv1 = system_view(sv, 1:2)
+            @test all( species(sv1, :) .=== species(sv, 1:2) )
+            @test all( position(sv1, :) .≈ position(sv, 1:2) )   
         end
         @testset "SimpleVelocitySystemView" begin
             sys1 = SimpleVelocitySystem(sys)
@@ -440,6 +446,13 @@ include("Aqua.jl")
             @test isa(cell(sv), IsolatedCell) 
             @test all( sv[:] .== sys1[1:2] )
             @test_throws KeyError sv[:dummy]
+            @test Set( atomkeys(sv) ) == Set( (:species, :position, :velocity) )
+
+            sv = system_view(sys1, 1:4)
+            sv1 = system_view(sv, 1:2)
+            @test all( species(sv1, :) .=== species(sv, 1:2) )
+            @test all( position(sv1, :) .≈ position(sv, 1:2) )
+            @test all( velocity(sv1, :) .≈ velocity(sv, 1:2) )
         end
         @testset "AtomicPropertySystemView" begin
             ap = AtomicPropertySystem(sys)
@@ -450,6 +463,14 @@ include("Aqua.jl")
             @test isa(cell(av), IsolatedCell)
             @test all( av[:] .== ap[1:2] ) 
             @test_throws KeyError av[:dummy]
+            @test Set( atomkeys(av) ) == Set( atomkeys(ap) )
+
+            av = system_view(ap, 1:4)
+            av1 = system_view(av, 1:2)
+            @test all( species(av1, :) .=== species(av, 1:2) )
+            @test all( position(av1, :) .≈ position(av, 1:2) )
+            @test all( velocity(av1, :) .≈ velocity(av, 1:2) )
+            @test all( mass(av1, :) .≈ mass(av, 1:2) )
         end
         @testset "CellSystemView" begin
             cs = CellSystem(sys)
@@ -462,6 +483,20 @@ include("Aqua.jl")
             @test all( periodicity(cv) .== periodicity(cs) )
             @test all( cv[:] .== cs[1:2] )
             @test_throws KeyError cv[:dummy]
+
+            cv = system_view(cs, 1:4)
+            cv1 = system_view(cv, 1:2)
+            @test all( species(cv1, :) .=== species(cv, 1:2) )
+            @test all( position(cv1, :) .≈ position(cv, 1:2) )
+            @test all( velocity(cv1, :) .≈ velocity(cv, 1:2) )
+            @test all( mass(cv1, :) .≈ mass(cv, 1:2) )
+            @test all( cell_vectors(cv1) .≈ cell_vectors(cv) )
+            @test all( periodicity(cv1) .== periodicity(cv) )
+
+            cv = system_view(cs, ChemicalSpecies(:H))
+            @test length(cv) == count( species(cs, :) .== ChemicalSpecies(:H) )
+            @test all( species(cv, :) .=== ChemicalSpecies(:H) )
+            @test cell(cv) == cell(cs)
         end
     end
 
