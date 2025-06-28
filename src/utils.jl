@@ -259,7 +259,12 @@ end
 
 Return the distance vector between atom `i` and atom `j` in the system `sys`.
 
-Note, currently only works for orthorombic cells or isolated systems.
+# Examples
+```julia
+distance_vector(sys, 1, 2) # returns the vector from atom 1 to atom 2
+distance_vector(sys, 2, 4:6) # returns the vectors from atom 2 to atoms 4, 5, and 6
+distance_vector(sys, 1, :) # returns the vectors from atom 1 to all other atoms
+```
 """
 function distance_vector(sys::Union{AbstractIsolatedSystem, AtomsVector}, i::Int, j::Int)
     r1 = position(sys, i)
@@ -347,8 +352,22 @@ distance_vector(::IsolatedCell, r::AbstractVector{SVector{D,T}}) where{D,T} = r
 
 """
     distance(sys, i, j)
+    distance(sys1, sys2)
 
 Return the distance between atom `i` and atom `j` in the system `sys`.
+If `sys1` and `sys2` are given, the distance between all atoms in `sys1` and `sys2` is returned.
+
+You can use `system_view` to take subsystems of the system and calculate distances between them.
+
+Minimum image convention is used for periodic systems, so the distance is always the shortest distance between the atoms.
+
+# Examples
+```julia
+distance(sys, 1, 2) # returns the distance between atom 1 and atom 2
+distance(sys, 2, :) # returns the distances from atom 2 to all other atoms
+distance(sys, 1, 2:5) # returns the distances from atom 1 to atoms 2, 3, 4, and 5
+
+distance( system_view(sys, 1:2), system_view(sys, 3:5) )
 """
 function distance(sys::Union{AbstractSystem, AtomsVector}, i::Int, j::Int)
     r = distance_vector(sys, i, j)
@@ -361,10 +380,18 @@ function distance(sys::Union{AbstractSystem, AtomsVector}, i::Int, j)
 end
 
 function distance(
-    sys1::Union{AbstractIsolatedSystem, AtomsVector},
-    sys2::Union{AbstractIsolatedSystem, AtomsVector}
-)
-    return [ norm( position(sys2, j) - position(sys1,i) ) for i in 1:length(sys1), j in 1:length(sys2) ]
+    sys1::Union{AbstractSystem, AtomsVector},
+    sys2::Union{AbstractSystem, AtomsVector}
+)   
+    @argcheck cell(sys1) == cell(sys2) 
+    tcell = cell(sys1)
+    pos = position(sys1, :)
+    tmp = map( 1:length(sys2) ) do j
+        r = position(sys2, j) 
+        dv = [ x - r for x in pos ]
+        return norm.( distance_vector( tcell, dv ) ) 
+    end
+    return reduce(hcat, tmp)
 end
 
 function distance(sys, i, j)
