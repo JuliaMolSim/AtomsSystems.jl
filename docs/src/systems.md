@@ -1,30 +1,108 @@
 # System Structures
 
-Under the hood there are several different system structures that differ on what data they store. But you only need to call `generic_system` to build all of them.
-Depending on what information you provide you get different structure
+```@setup system
+using AtomsBase
+using AtomsSystems
+using Unitful
+```
 
-```julia
-# Build based on vector of atoms
+Under the hood there are several different system structures that differ on what data they store. You only need to call `generic_system` to build all of them.
+The basic principle is that the system is optimized to carry only the information you give.
+
+The most simple system is build by giving only species and positions
+
+```@example system
+# Use macro to build system with xyz-file style syntax
+generic_system"""
+    H 0 0 0
+    O 1 0 0
+"""
+
+# Build based on vector of species and positions
+# generic_system(species::AbstractVector, position::AbstractVector{AbstractVector}; kwargs...)
+generic_system(
+    [:H, :O],
+    [ [0.0, 0.0, 0.0]u"Å",  [1.0, 0.0, 0.0]u"Å" ]
+)
+
+# Save with vector of atoms
 # generic_system(atoms::AbstractVector{SimpeAtom}; kwargs...)
 generic_system([
     SimpleAtom(:H, [0.0, 0.0, 0.0]u"Å"), 
     SimpleAtom(:O, [1.0, 0.0, 0.0]u"Å")]
 )
+```
 
-# Same but added key for energy
+Keyword arguments can be used to add global features 
+
+
+```@example system
+# Add global features at build
 generic_system([
     SimpleAtom(:H, [0.0, 0.0, 0.0]u"Å"),
     SimpleAtom(:O, [1.0, 0.0, 0.0]u"Å")];
-    energy = 10.0u"eV"
+    energy = 10.0u"eV",
+    label  = "my sys"
 )
 
-# Add cell to the system
+# or add global features to an existing system
+sys = generic_system([
+    SimpleAtom(:H, [0.0, 0.0, 0.0]u"Å"), 
+    SimpleAtom(:O, [1.0, 0.0, 0.0]u"Å")]
+)
+
+sys = generic_system(sys; energy = 10.0u"eV", label  = "my sys" )
+```
+
+To add velocity you can do some of the following
+
+```@example system
+
+# using vectors - geric_system(spc, pos, [vel]; kwargs...)
+generic_system(
+    [:H, :O],
+    [[0.0, 0.0, 0.0]u"Å", [1.0, 0.0, 0.0]u"Å"],
+    [[0.1, 0.0, 0.0]u"Å/s", [0.2, 0.0, 0.0]u"Å/s"];
+)
+
+# or with atoms
+generic_system(
+    SimpleAtom(:H, [0.0, 0.0, 0.0]u"Å", [0.1, 0.0, 0.0]u"Å/s"),
+    SimpleAtom(:O, [1.0, 0.0, 0.0]u"Å", [0.2, 0.0, 0.0]u"Å/s")
+)
+
+```
+
+## Add Cell to the System
+
+`generic_system` can alter cell, if given as a keyword argument. You can give only `cell_vectors`, in this case `periodicity` is set to `(true,true,true)`. 
+
+```@example system
+# Add cell to the system by giving only cell vectors
 generic_system([
     SimpleAtom(:H, [0.0, 0.0, 0.0]u"Å"),
     SimpleAtom(:O, [1.0, 0.0, 0.0]u"Å")]; 
     cell_vectors = [[1.0, 0.0, 0.0]u"Å", [0.0, 1.0, 0.0]u"Å", [0.0, 0.0, 1.0]u"Å"], 
-    periodicity = (true, true, true)
+    #periodicity = (true, true, true) this comes by default, but you can edit it
 )
+```
+
+You can also add/edit the cell of an existing system by keyword arguments
+
+```@example system
+sys = generic_system([
+    SimpleAtom(:H, [0.0, 0.0, 0.0]u"Å"), 
+    SimpleAtom(:O, [1.0, 0.0, 0.0]u"Å")]
+)
+
+sys = generic_system(
+    sys;
+    cell_vectors = [[1.0, 0.0, 0.0]u"Å", [0.0, 1.0, 0.0]u"Å", [0.0, 0.0, 1.0]u"Å"],
+)
+```
+
+
+```
 
 # Create a system from an array of pairs
 # generic_system(AbstractVector(<:Pair); kwargs...)

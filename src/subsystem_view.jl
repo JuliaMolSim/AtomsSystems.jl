@@ -121,7 +121,7 @@ instead of creating this type directly.
 - `TB`: Type of the base system (e.g., `SimpleSystemView`).
 - `TP`: Type of the atomic properties (e.g., `SVector{D, T}`).
 - `TI`: Type index for SubArray used for the view.
-- `SM`: Type of the atomic properties (e.g., `SVector{D, T}`).
+- `SM`: Boolean indicating if the system has a custom mass property.
 - `L`:  True when SybArray uses linear indexing, false otherwise.
 """
 mutable struct AtomicPropertySystemView{D, LU, TB, TP, TI, SM, L} <: AbstractIsolatedSystem{D, LU}
@@ -224,7 +224,21 @@ AtomsBase.velocity(sys::SimpleVelocitySystemView, ::Colon) = sys.velocity
 
 AtomsBase.set_velocity!(sys::SimpleVelocitySystemView, i, x) = setindex!(sys.velocity, x, i)
 
+function AtomsBase.mass(sys::AtomicPropertySystemView{D, LU, TB, TP, TI, true}, i::Int) where {D, LU, TB, TP, TI}
+    return sys.atom_properties[i][:mass]
+end
 
+function AtomsBase.mass(sys::AtomicPropertySystemView{D, LU, TB, TP, TI, false}, i::Int) where {D, LU, TB, TP, TI}
+    return mass( species(sys, i) )
+end
+
+function AtomsBase.mass(sys::AtomicPropertySystemView{D, LU, TB, TP, TI, true}, i) where {D, LU, TB, TP, TI}
+    return map(x -> x[:mass], sys.atom_properties[i])
+end
+
+function AtomsBase.mass(sys::AtomicPropertySystemView{D, LU, TB, TP, TI, false}, i) where {D, LU, TB, TP, TI}
+    return mass.( species(sys, i) )
+end
 
 
 """
@@ -250,6 +264,11 @@ system_view(sys::Union{SimpleVelocitySystem, SimpleVelocitySystemView}, i) = Sim
 system_view(sys::Union{AtomicPropertySystem, AtomicPropertySystemView}, i) = AtomicPropertySystemView(sys, i)
 system_view(sys::Union{CellSystem, CellSystemView}, i) = CellSystemView(sys, i)
 
+system_view(sys::Union{SimpleSystem, SimpleSystemView}, i::Int) = system_view(sys, i:i)
+system_view(sys::Union{SimpleVelocitySystem, SimpleVelocitySystemView}, i::Int) = system_view(sys, i:i)
+system_view(sys::Union{AtomicPropertySystem, AtomicPropertySystemView}, i::Int) = system_view(sys, i:i)
+system_view(sys::Union{CellSystem, CellSystemView}, i::Int) = system_view(sys, i:i)
+
 system_view(sys::GeneralSystem, i) = CellSystemView(sys.base_system, i)
 
 system_view(sys::Union{SimpleSystem, SimpleSystemView}, spc::ChemicalSpecies...) = _system_view(sys, spc...)
@@ -259,7 +278,7 @@ system_view(sys::Union{CellSystem, CellSystemView}, spc::ChemicalSpecies...) = _
 
 system_view(sys::GeneralSystem, spc::ChemicalSpecies...) = _system_view(sys, spc...)   
     
-# Helper function to fight abiquity in the system_view function
+# Helper function to fight ambiquity in the system_view function
 function _system_view(sys::AbstractCompositeSystem, spc::ChemicalSpecies...)
     i = species(sys, :) .∈ Ref(spc)
     if count(i) == 0

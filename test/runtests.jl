@@ -476,6 +476,11 @@ include("Aqua.jl")
             sv1 = system_view(sv, 1:2)
             @test all( species(sv1, :) .=== species(sv, 1:2) )
             @test all( position(sv1, :) .≈ position(sv, 1:2) )   
+
+            sv = system_view(sys1, 2)
+            @test species(sv, 1) === species(sys1, 2)
+            @test position(sv, 1) ≈ position(sys1, 2)
+            @test length(sv) == 1
         end
         @testset "SimpleVelocitySystemView" begin
             sys1 = SimpleVelocitySystem(sys)
@@ -496,6 +501,12 @@ include("Aqua.jl")
             @test all( species(sv1, :) .=== species(sv, 1:2) )
             @test all( position(sv1, :) .≈ position(sv, 1:2) )
             @test all( velocity(sv1, :) .≈ velocity(sv, 1:2) )
+
+            sv = system_view(sys1, 2)
+            @test species(sv, 1) === species(sys1, 2)
+            @test position(sv, 1) ≈ position(sys1, 2)
+            @test velocity(sv, 1) ≈ velocity(sys1, 2)
+            @test length(sv) == 1
         end
         @testset "AtomicPropertySystemView" begin
             ap = AtomicPropertySystem(sys)
@@ -514,6 +525,13 @@ include("Aqua.jl")
             @test all( position(av1, :) .≈ position(av, 1:2) )
             @test all( velocity(av1, :) .≈ velocity(av, 1:2) )
             @test all( mass(av1, :) .≈ mass(av, 1:2) )
+
+            av = system_view(ap, 2)
+            @test species(av, 1) === species(ap, 2)
+            @test position(av, 1) ≈ position(ap, 2)
+            @test velocity(av, 1) ≈ velocity(ap, 2)
+            @test mass(av, 1) ≈ mass(ap, 2)
+            @test length(av) == 1
         end
         @testset "CellSystemView" begin
             cs = CellSystem(sys)
@@ -540,6 +558,14 @@ include("Aqua.jl")
             @test length(cv) == count( species(cs, :) .== ChemicalSpecies(:H) )
             @test all( species(cv, :) .=== ChemicalSpecies(:H) )
             @test cell(cv) == cell(cs)
+
+            cv = system_view(cs, 2)
+            @test species(cv, 1) === species(cs, 2)
+            @test position(cv, 1) ≈ position(cs, 2)
+            @test velocity(cv, 1) ≈ velocity(cs, 2)
+            @test mass(cv, 1) ≈ mass(cs, 2)
+            @test cell(cv) == cell(cs)
+            @test length(cv) == 1
         end
     end
 
