@@ -12,7 +12,7 @@ makedocs(
         "Atoms" => "atoms.md",
         "Systems" => "systems.md",
         "Utilities" => "utilities.md",
-        "Chemfiles Extension" => "chemfiles_extension.md",
+        "Chemfiles Extension" => "chemfiles.md",
         "Index" => "end_index.md",
     ],
     checkdocs = :public,
