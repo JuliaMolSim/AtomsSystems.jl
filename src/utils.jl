@@ -260,10 +260,11 @@ end
 Return the distance vector between atom `i` and atom `j` in the system `sys`.
 
 # Examples
+
 ```julia
-distance_vector(sys, 1, 2) # returns the vector from atom 1 to atom 2
+distance_vector(sys, 1, 2)   # returns the vector from atom 1 to atom 2
 distance_vector(sys, 2, 4:6) # returns the vectors from atom 2 to atoms 4, 5, and 6
-distance_vector(sys, 1, :) # returns the vectors from atom 1 to all other atoms
+distance_vector(sys, 1, :)   # returns the vectors from atom 1 to all other atoms
 ```
 """
 function distance_vector(sys::Union{AbstractIsolatedSystem, AtomsVector}, i::Int, j::Int)
@@ -363,11 +364,12 @@ Minimum image convention is used for periodic systems, so the distance is always
 
 # Examples
 ```julia
-distance(sys, 1, 2) # returns the distance between atom 1 and atom 2
-distance(sys, 2, :) # returns the distances from atom 2 to all other atoms
-distance(sys, 1, 2:5) # returns the distances from atom 1 to atoms 2, 3, 4, and 5
+distance(sys, 1, 2)    # returns the distance between atom 1 and atom 2
+distance(sys, 2, :)    # returns the distances from atom 2 to all other atoms
+distance(sys, 1, 2:5)  # returns the distances from atom 1 to atoms 2, 3, 4, and 5
 
 distance( system_view(sys, 1:2), system_view(sys, 3:5) )
+```
 """
 function distance(sys::Union{AbstractSystem, AtomsVector}, i::Int, j::Int)
     r = distance_vector(sys, i, j)
@@ -445,6 +447,14 @@ end
 Repeat the system `sys` in all three dimensions by the factors `n`
 and return the new system.
 Original system is not modified.
+
+This works only for systems with `PeriodicCell` or type of `CellSystem{3}`.
+
+# Examples
+```julia
+repeat(sys, (2, 2, 2)) # repeats the system in all three dimensions by a factor of 2
+repeat(sys, 2)         # same as above, but with a single integer
+```
 """
 function Base.repeat(sys::CellSystem{3}, n::NTuple{3,<:Integer})
     #TODO make this suppor more diminsions with generating function

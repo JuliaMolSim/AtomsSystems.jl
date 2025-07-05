@@ -231,7 +231,7 @@ ref = make_test_system()
 sys = generic_system(ref.system)
 ```
 
-As you can see it has a lot of features. If would only need species and positions we could use [`SimpleSystem`](@ref)
+As you can see it has a lot of features. If you only need species and positions you can use [`SimpleSystem`](@ref)
 
 ```@example system_example
 SimpleSystem(sys)
