@@ -212,7 +212,7 @@ and it adds `PeriodicCell` to a system that does not have cell.
 
 [`AtomicPropertySystem`](@ref) is other composite system. It takes in a `AbstractSimpleSystem` and adds atomic properties to it. That is properties like charge, custom mass, etc.
 
-Finally is [`GeneralSystem`](@ref) that adds global features.
+Finally is `GeneralSystem` that adds global features. Note that `GeneralSystem` should never be called directly. Call instead `generic_system`.
 
 
 ## Using Different Systems Directly Control What Information is Stored
