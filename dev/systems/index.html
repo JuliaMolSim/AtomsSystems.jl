@@ -1,49 +1,96 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Systems · AtomsSystems</title><meta name="title" content="Systems · AtomsSystems"/><meta property="og:title" content="Systems · AtomsSystems"/><meta property="twitter:title" content="Systems · AtomsSystems"/><meta name="description" content="Documentation for AtomsSystems."/><meta property="og:description" content="Documentation for AtomsSystems."/><meta property="twitter:description" content="Documentation for AtomsSystems."/><script data-outdated-warner src="../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../search_index.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-mocha.css" data-theme-name="catppuccin-mocha"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-macchiato.css" data-theme-name="catppuccin-macchiato"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-frappe.css" data-theme-name="catppuccin-frappe"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-latte.css" data-theme-name="catppuccin-latte"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../">AtomsSystems</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../">Home</a></li><li><a class="tocitem" href="../atoms/">Atoms</a></li><li class="is-active"><a class="tocitem" href>Systems</a><ul class="internal"><li><a class="tocitem" href="#Build-System-from-Other-Systems"><span>Build System from Other Systems</span></a></li><li><a class="tocitem" href="#Create-a-Subsystem-from-an-Existing-System"><span>Create a Subsystem from an Existing System</span></a></li><li><a class="tocitem" href="#Subsystem-Views"><span>Subsystem Views</span></a></li><li><a class="tocitem" href="#Changing-Systems"><span>Changing Systems</span></a></li></ul></li><li><a class="tocitem" href="../utilities/">Utilities</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Systems</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Systems</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/JuliaMolSim/AtomsSystems.jl" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/JuliaMolSim/AtomsSystems.jl/blob/main/docs/src/systems.md" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="System-Structures"><a class="docs-heading-anchor" href="#System-Structures">System Structures</a><a id="System-Structures-1"></a><a class="docs-heading-anchor-permalink" href="#System-Structures" title="Permalink"></a></h1><p>Under the hood there are several different system structures that differ on what data they store. But you only need to call <code>generic_system</code> to build all of them. Depending on what information you provide you get different structure</p><pre><code class="language-julia hljs"># Build based on vector of atoms
-# generic_system(atoms::AbstractVector{SimpeAtom}; kwargs...)
-generic_system([
-    SimpleAtom(:H, [0.0, 0.0, 0.0]u&quot;Å&quot;), 
-    SimpleAtom(:O, [1.0, 0.0, 0.0]u&quot;Å&quot;)]
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Systems · AtomsSystems</title><meta name="title" content="Systems · AtomsSystems"/><meta property="og:title" content="Systems · AtomsSystems"/><meta property="twitter:title" content="Systems · AtomsSystems"/><meta name="description" content="Documentation for AtomsSystems."/><meta property="og:description" content="Documentation for AtomsSystems."/><meta property="twitter:description" content="Documentation for AtomsSystems."/><script data-outdated-warner src="../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../search_index.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-mocha.css" data-theme-name="catppuccin-mocha"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-macchiato.css" data-theme-name="catppuccin-macchiato"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-frappe.css" data-theme-name="catppuccin-frappe"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-latte.css" data-theme-name="catppuccin-latte"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../main_page/">AtomsSystems</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../main_page/">Home</a></li><li><a class="tocitem" href="../atoms/">Atoms</a></li><li class="is-active"><a class="tocitem" href>Systems</a><ul class="internal"><li><a class="tocitem" href="#Add-Cell-to-the-System"><span>Add Cell to the System</span></a></li><li><a class="tocitem" href="#Create-a-Subsystem-from-an-Existing-System"><span>Create a Subsystem from an Existing System</span></a></li><li><a class="tocitem" href="#Subsystem-Views"><span>Subsystem Views</span></a></li><li><a class="tocitem" href="#Changing-Systems"><span>Changing Systems</span></a></li><li><a class="tocitem" href="#System-Structures-Explained"><span>System Structures Explained</span></a></li><li><a class="tocitem" href="#Using-Different-Systems-Directly-Control-What-Information-is-Stored"><span>Using Different Systems Directly Control What Information is Stored</span></a></li></ul></li><li><a class="tocitem" href="../utilities/">Utilities</a></li><li><a class="tocitem" href="../">Index</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Systems</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Systems</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/JuliaMolSim/AtomsSystems.jl" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/JuliaMolSim/AtomsSystems.jl/blob/main/docs/src/systems.md" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="System-Structures"><a class="docs-heading-anchor" href="#System-Structures">System Structures</a><a id="System-Structures-1"></a><a class="docs-heading-anchor-permalink" href="#System-Structures" title="Permalink"></a></h1><p>Under the hood there are several different system structures that differ on what data they store. You only need to call <code>generic_system</code> to build all of them. The basic principle is that the system is optimized to carry only the information you give.</p><p>The most simple system is build by giving only species and positions</p><pre><code class="language-julia hljs"># Use macro to build system with xyz-file style syntax
+generic_system&quot;&quot;&quot;
+    H 0 0 0
+    O 1 0 0
+&quot;&quot;&quot;
+
+# Build based on vector of species and positions
+# generic_system(species, position; kwargs...)
+generic_system(
+    [:H, :O],
+    [ [0.0, 0.0, 0.0]u&quot;Å&quot;,  [1.0, 0.0, 0.0]u&quot;Å&quot; ]
 )
 
-# Same but added key for energy
+# Save with vector of atoms
+# generic_system(atoms::AbstractVector{SimpeAtom}; kwargs...)
+generic_system([
+    SimpleAtom(:H, [0.0, 0.0, 0.0]u&quot;Å&quot;),
+    SimpleAtom(:O, [1.0, 0.0, 0.0]u&quot;Å&quot;)]
+)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">SimpleSystem(HO, periodicity = FFF):
+    SimpleAtom(H,  [       0,        0,        0]u&quot;Å&quot;)
+    SimpleAtom(O,  [       1,        0,        0]u&quot;Å&quot;)
+</code></pre><p>Keyword arguments can be used to add global features </p><pre><code class="language-julia hljs"># Add global features at build
 generic_system([
     SimpleAtom(:H, [0.0, 0.0, 0.0]u&quot;Å&quot;),
     SimpleAtom(:O, [1.0, 0.0, 0.0]u&quot;Å&quot;)];
-    energy = 10.0u&quot;eV&quot;
+    energy = 10.0u&quot;eV&quot;,
+    label  = &quot;my sys&quot;
 )
 
-# Add cell to the system
-generic_system([
+# or add global features to an existing system
+sys = generic_system([
     SimpleAtom(:H, [0.0, 0.0, 0.0]u&quot;Å&quot;),
-    SimpleAtom(:O, [1.0, 0.0, 0.0]u&quot;Å&quot;)]; 
-    cell_vectors = [[1.0, 0.0, 0.0]u&quot;Å&quot;, [0.0, 1.0, 0.0]u&quot;Å&quot;, [0.0, 0.0, 1.0]u&quot;Å&quot;], 
-    periodicity = (true, true, true)
+    SimpleAtom(:O, [1.0, 0.0, 0.0]u&quot;Å&quot;)]
 )
+# generic_system(sys; kwargs...) - style
+sys = generic_system(sys; energy = 10.0u&quot;eV&quot;, label  = &quot;my sys&quot; )</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">GeneralSystem(HO, periodicity = FFF):
+    energy            : 10.0 eV
+    label             : my sys
 
-# Create a system from an array of pairs
-# generic_system(AbstractVector(&lt;:Pair); kwargs...)
-sys = generic_system([:H =&gt; [0.0, 0.0, 0.0]u&quot;Å&quot;, :O =&gt; [1.0, 0.0, 0.0]u&quot;Å&quot;])
-
-# Create a system vectors of atom symbols, positions and velocities
-# geric_system(spc, pos, [vel]; kwargs...)
-sys = generic_system(
+    SimpleAtom(H,  [       0,        0,        0]u&quot;Å&quot;)
+    SimpleAtom(O,  [       1,        0,        0]u&quot;Å&quot;)
+</code></pre><p>To add velocity you can do some of the following</p><pre><code class="language-julia hljs"># using vectors - generic_system(spc, pos, [vel]; kwargs...)
+generic_system(
     [:H, :O],
     [[0.0, 0.0, 0.0]u&quot;Å&quot;, [1.0, 0.0, 0.0]u&quot;Å&quot;],
     [[0.1, 0.0, 0.0]u&quot;Å/s&quot;, [0.2, 0.0, 0.0]u&quot;Å/s&quot;];
-)</code></pre><h2 id="Build-System-from-Other-Systems"><a class="docs-heading-anchor" href="#Build-System-from-Other-Systems">Build System from Other Systems</a><a id="Build-System-from-Other-Systems-1"></a><a class="docs-heading-anchor-permalink" href="#Build-System-from-Other-Systems" title="Permalink"></a></h2><p>You can build system from other system and modify system global features</p><pre><code class="language-julia hljs"># Form a copy of old system
-# gneric_system(old_sys; kwargs...)
-new_sys = generic_system(old_sys)
+)
 
-# Copy system and add a global feature
-new_sys = generic_system(old_sys; energy=10.0u&quot;eV&quot;)
+# or with atoms
+generic_system(
+    SimpleAtom(:H, [0.0, 0.0, 0.0]u&quot;Å&quot;, [0.1, 0.0, 0.0]u&quot;Å/s&quot;),
+    SimpleAtom(:O, [1.0, 0.0, 0.0]u&quot;Å&quot;, [0.2, 0.0, 0.0]u&quot;Å/s&quot;)
+)
 
-# Copy system and add/change cell
-new_sys = generic_system(
-    old_sys; 
+# or add velocity to existing system
+sys = generic_system&quot;&quot;&quot;
+    H 0 0 0
+    O 1 0 0
+&quot;&quot;&quot;
+# using generic_system(sys, vel) call
+sys = generic_system(sys, [[0.1, 0.0, 0.0]u&quot;Å/s&quot;, [0.2, 0.0, 0.0]u&quot;Å/s&quot;])</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">CellSystem(HO, periodicity = FFF):
+    SimpleAtom(H,  [       0,        0,        0]u&quot;Å&quot;, [     0.1,        0,        0]u&quot;Å s^-1&quot;)
+    SimpleAtom(O,  [       1,        0,        0]u&quot;Å&quot;, [     0.2,        0,        0]u&quot;Å s^-1&quot;)
+</code></pre><h2 id="Add-Cell-to-the-System"><a class="docs-heading-anchor" href="#Add-Cell-to-the-System">Add Cell to the System</a><a id="Add-Cell-to-the-System-1"></a><a class="docs-heading-anchor-permalink" href="#Add-Cell-to-the-System" title="Permalink"></a></h2><p><code>generic_system</code> can alter cell, if given as a keyword argument. You can give only <code>cell_vectors</code>, in this case <code>periodicity</code> is set to <code>(true,true,true)</code>. </p><pre><code class="language-julia hljs"># Add cell to the system by giving only cell vectors
+generic_system([
+    SimpleAtom(:H, [0.0, 0.0, 0.0]u&quot;Å&quot;),
+    SimpleAtom(:O, [1.0, 0.0, 0.0]u&quot;Å&quot;)];
     cell_vectors = [[1.0, 0.0, 0.0]u&quot;Å&quot;, [0.0, 1.0, 0.0]u&quot;Å&quot;, [0.0, 0.0, 1.0]u&quot;Å&quot;],
-    periodicity = (true, true, true)
-)</code></pre><h2 id="Create-a-Subsystem-from-an-Existing-System"><a class="docs-heading-anchor" href="#Create-a-Subsystem-from-an-Existing-System">Create a Subsystem from an Existing System</a><a id="Create-a-Subsystem-from-an-Existing-System-1"></a><a class="docs-heading-anchor-permalink" href="#Create-a-Subsystem-from-an-Existing-System" title="Permalink"></a></h2><p>The created subsystem does not share any data with the system it was build</p><pre><code class="language-julia hljs"># Subsystem with atoms 1:5
+    #periodicity = (true, true, true) this comes by default, but you can edit it
+)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">CellSystem(HO, periodicity = TTT):
+    cell_vectors      : [       1        0        0;
+                                0        1        0;
+                                0        0        1]u&quot;Å&quot;
+
+    SimpleAtom(H,  [       0,        0,        0]u&quot;Å&quot;)
+    SimpleAtom(O,  [       1,        0,        0]u&quot;Å&quot;)
+</code></pre><p>You can also add a cell to an existing system by keyword arguments</p><pre><code class="language-julia hljs">sys = generic_system([
+    SimpleAtom(:H, [0.0, 0.0, 0.0]u&quot;Å&quot;),
+    SimpleAtom(:O, [1.0, 0.0, 0.0]u&quot;Å&quot;)]
+)
+
+sys = generic_system(
+    sys;
+    cell_vectors = [[1.0, 0.0, 0.0]u&quot;Å&quot;, [0.0, 1.0, 0.0]u&quot;Å&quot;, [0.0, 0.0, 1.0]u&quot;Å&quot;],
+)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">CellSystem(HO, periodicity = TTT):
+    cell_vectors      : [       1        0        0;
+                                0        1        0;
+                                0        0        1]u&quot;Å&quot;
+
+    SimpleAtom(H,  [       0,        0,        0]u&quot;Å&quot;)
+    SimpleAtom(O,  [       1,        0,        0]u&quot;Å&quot;)
+</code></pre><h2 id="Create-a-Subsystem-from-an-Existing-System"><a class="docs-heading-anchor" href="#Create-a-Subsystem-from-an-Existing-System">Create a Subsystem from an Existing System</a><a id="Create-a-Subsystem-from-an-Existing-System-1"></a><a class="docs-heading-anchor-permalink" href="#Create-a-Subsystem-from-an-Existing-System" title="Permalink"></a></h2><p>You can give selection parameters for <code>generic_system</code> command to create subsystems. The created systems are allocated, so they <strong>do not share</strong> common data with the original system.</p><pre><code class="language-julia hljs"># Subsystem with atoms 1:5
 # generic_system(sys, subsys_definition...; kwargs...)
 sub_sys = generic_system(sys, 1:5)
 
@@ -51,7 +98,7 @@ sub_sys = generic_system(sys, 1:5)
 sub_sys = generic_system(sys, ChemicalSpecies(:H), ChemicalSpecies(:O))
 
 # Add global feature to subsystem
-sub_sys = generic_system(sys, 1:5; label=&quot;the first 5 atoms&quot;)</code></pre><h2 id="Subsystem-Views"><a class="docs-heading-anchor" href="#Subsystem-Views">Subsystem Views</a><a id="Subsystem-Views-1"></a><a class="docs-heading-anchor-permalink" href="#Subsystem-Views" title="Permalink"></a></h2><p>You can create subsystems that share all data with the host system by calling <code>system_view</code></p><pre><code class="language-julia hljs"># Subsystem with atoms 1:5
+sub_sys = generic_system(sys, 1:5; label=&quot;the first 5 atoms&quot;)</code></pre><h2 id="Subsystem-Views"><a class="docs-heading-anchor" href="#Subsystem-Views">Subsystem Views</a><a id="Subsystem-Views-1"></a><a class="docs-heading-anchor-permalink" href="#Subsystem-Views" title="Permalink"></a></h2><p><code>system_view</code> allows you to create subsystems that <strong>share</strong> all data with the original system.</p><pre><code class="language-julia hljs"># Subsystem with atoms 1:5
 # system_view(sys, subsys_definition...)
 syb_sys = system_view(sys, 1:5)
 
@@ -64,4 +111,60 @@ sub_sys = system_view(sys, ChemicalSpecies(:H), ChemicalSpecies(:O))</code></pre
 
 AtomsBase.set_position!(sys, 2, [0.0, 1.0, 0.0]u&quot;Å&quot;)
 AtomsBase.set_velocity!(sys, 2, [0.0, 0.2, 0.0]u&quot;Å/s&quot;)
-AtomsBase.set_species!(sys, 1, ChemicalSpecies(:N))</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../atoms/">« Atoms</a><a class="docs-footer-nextpage" href="../utilities/">Utilities »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.13.0 on <span class="colophon-date" title="Friday 4 July 2025 14:58">Friday 4 July 2025</span>. Using Julia version 1.11.5.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+AtomsBase.set_species!(sys, 1, ChemicalSpecies(:N))</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">SimpleVelocitySystem(NO, periodicity = FFF):
+    SimpleAtom(N,  [       0,        0,        0]u&quot;Å&quot;, [     0.1,        0,        0]u&quot;Å s^-1&quot;)
+    SimpleAtom(O,  [       0,        1,        0]u&quot;Å&quot;, [       0,      0.2,        0]u&quot;Å s^-1&quot;)
+</code></pre><h2 id="System-Structures-Explained"><a class="docs-heading-anchor" href="#System-Structures-Explained">System Structures Explained</a><a id="System-Structures-Explained-1"></a><a class="docs-heading-anchor-permalink" href="#System-Structures-Explained" title="Permalink"></a></h2><p>There are following abstract types defined</p><ul><li><code>AbstractCompositeSystem{D, LU}</code> - supertype for all structures and a subtype of <code>AbstractSystem{D}</code></li><li><code>AbstractIsolatedSystem{D, LU}</code> - supertype for system with isolated cell (no cell information)</li><li><code>AbstractSimpleSystem{D, LU}</code> - lowest level of systems that store data for species, position and velocity</li></ul><h3 id="SimpleSystems"><a class="docs-heading-anchor" href="#SimpleSystems">SimpleSystems</a><a id="SimpleSystems-1"></a><a class="docs-heading-anchor-permalink" href="#SimpleSystems" title="Permalink"></a></h3><p>The simplest types that are subtypes of <code>AbstractSimpleSystem</code> are</p><ul><li><a href="../#AtomsSystems.SimpleSystem"><code>SimpleSystem</code></a> - holds only species and positions</li><li><a href="../#AtomsSystems.SimpleVelocitySystem"><code>SimpleVelocitySystem</code></a> - holds species, position and velocity</li></ul><p>Every system structure is either directly one of these or holds a one. </p><h3 id="CompositeSystems"><a class="docs-heading-anchor" href="#CompositeSystems">CompositeSystems</a><a id="CompositeSystems-1"></a><a class="docs-heading-anchor-permalink" href="#CompositeSystems" title="Permalink"></a></h3><p>Composite systems are system structures that hold a system, called <code>base_system</code>, and some additional information to that system.</p><p>In example <a href="../#AtomsSystems.CellSystem"><code>CellSystem</code></a> has following definition</p><pre><code class="language-julia hljs">mutable struct CellSystem{D, LU, TB, TC} &lt;: AbstractCompositeSystem{D, LU}
+    base_system::TB
+    cell::TC
+    function CellSystem(sys::AbstractIsolatedSystem{D, LU}, cell::PeriodicCell{D,T}) where {D, LU, T}
+        new{D, LU, typeof(sys), typeof(cell)}(sys, cell)
+    end
+end</code></pre><p>and it adds <code>PeriodicCell</code> to a system that does not have cell.</p><p><a href="../#AtomsSystems.AtomicPropertySystem"><code>AtomicPropertySystem</code></a> is other composite system. It takes in a <code>AbstractSimpleSystem</code> and adds atomic properties to it. That is properties like charge, custom mass, etc.</p><p>Finally is <code>GeneralSystem</code> that adds global features. Note that <code>GeneralSystem</code> should never be called directly. Call instead <code>generic_system</code>.</p><h2 id="Using-Different-Systems-Directly-Control-What-Information-is-Stored"><a class="docs-heading-anchor" href="#Using-Different-Systems-Directly-Control-What-Information-is-Stored">Using Different Systems Directly Control What Information is Stored</a><a id="Using-Different-Systems-Directly-Control-What-Information-is-Stored-1"></a><a class="docs-heading-anchor-permalink" href="#Using-Different-Systems-Directly-Control-What-Information-is-Stored" title="Permalink"></a></h2><p>You can use different systems to control what information is stored. This allows you to drop features you don&#39;t need.</p><p>Lets build a system what has a lots of features using <code>AtomsBaseTesting</code></p><pre><code class="language-julia hljs">using AtomsBase
+using AtomsBaseTesting
+using AtomsSystems
+using Unitful
+
+ref = make_test_system()
+sys = generic_system(ref.system)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">GeneralSystem(CHeH₂N, periodicity = TTF):
+    cell_vectors      : [ 1.50304 0.850344 0.717239;
+                          0.36113  1.00814 0.814712;
+                          0.06828 0.381122  2.12908]u&quot;Å&quot;
+    multiplicity      : 2
+    charge            : -1 e
+    extra_data        : 42
+
+    SimpleAtom(H,  [0.253703, 0.0443007, -0.244274]u&quot;Å&quot;, [-32519.5, -1.3025e+06,  -762537]u&quot;m s^-1&quot;)
+    SimpleAtom(H,  [0.101984, 0.187666, -2.52207]u&quot;Å&quot;, [  849901, 1.11005e+06,   875324]u&quot;m s^-1&quot;)
+    SimpleAtom(C,  [-0.279265, 0.329242, -0.889473]u&quot;Å&quot;, [  419925,   327240,   523260]u&quot;m s^-1&quot;)
+    SimpleAtom(N,  [-0.15545, 0.242648, -1.55644]u&quot;Å&quot;, [  659675,  -703826,   393001]u&quot;m s^-1&quot;)
+    SimpleAtom(He, [0.731883, 0.515328, -1.99078]u&quot;Å&quot;, [  644789, -1.94016e+06,  -146163]u&quot;m s^-1&quot;)
+</code></pre><p>As you can see it has a lot of features. If would only need species and positions we could use <a href="../#AtomsSystems.SimpleSystem"><code>SimpleSystem</code></a></p><pre><code class="language-julia hljs">SimpleSystem(sys)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">SimpleSystem(CHeH₂N, periodicity = FFF):
+    SimpleAtom(H,  [0.253703, 0.0443007, -0.244274]u&quot;Å&quot;)
+    SimpleAtom(H,  [0.101984, 0.187666, -2.52207]u&quot;Å&quot;)
+    SimpleAtom(C,  [-0.279265, 0.329242, -0.889473]u&quot;Å&quot;)
+    SimpleAtom(N,  [-0.15545, 0.242648, -1.55644]u&quot;Å&quot;)
+    SimpleAtom(He, [0.731883, 0.515328, -1.99078]u&quot;Å&quot;)
+</code></pre><p>Similarly using <a href="../#AtomsSystems.SimpleVelocitySystem"><code>SimpleVelocitySystem</code></a> allows limiting to species, position and velocities</p><pre><code class="language-julia hljs">SimpleVelocitySystem(sys)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">SimpleVelocitySystem(CHeH₂N, periodicity = FFF):
+    SimpleAtom(H,  [0.253703, 0.0443007, -0.244274]u&quot;Å&quot;, [-32519.5, -1.3025e+06,  -762537]u&quot;m s^-1&quot;)
+    SimpleAtom(H,  [0.101984, 0.187666, -2.52207]u&quot;Å&quot;, [  849901, 1.11005e+06,   875324]u&quot;m s^-1&quot;)
+    SimpleAtom(C,  [-0.279265, 0.329242, -0.889473]u&quot;Å&quot;, [  419925,   327240,   523260]u&quot;m s^-1&quot;)
+    SimpleAtom(N,  [-0.15545, 0.242648, -1.55644]u&quot;Å&quot;, [  659675,  -703826,   393001]u&quot;m s^-1&quot;)
+    SimpleAtom(He, [0.731883, 0.515328, -1.99078]u&quot;Å&quot;, [  644789, -1.94016e+06,  -146163]u&quot;m s^-1&quot;)
+</code></pre><p><a href="../#AtomsSystems.AtomicPropertySystem"><code>AtomicPropertySystem</code></a> preserves all atomic properties, but ignores cell and global features</p><pre><code class="language-julia hljs">AtomicPropertySystem(sys)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">AtomicPropertySystem(CHeH₂N, periodicity = FFF):
+    SimpleAtom(H,  [0.253703, 0.0443007, -0.244274]u&quot;Å&quot;, [-32519.5, -1.3025e+06,  -762537]u&quot;m s^-1&quot;)
+    SimpleAtom(H,  [0.101984, 0.187666, -2.52207]u&quot;Å&quot;, [  849901, 1.11005e+06,   875324]u&quot;m s^-1&quot;)
+    SimpleAtom(C,  [-0.279265, 0.329242, -0.889473]u&quot;Å&quot;, [  419925,   327240,   523260]u&quot;m s^-1&quot;)
+    SimpleAtom(N,  [-0.15545, 0.242648, -1.55644]u&quot;Å&quot;, [  659675,  -703826,   393001]u&quot;m s^-1&quot;)
+    SimpleAtom(He, [0.731883, 0.515328, -1.99078]u&quot;Å&quot;, [  644789, -1.94016e+06,  -146163]u&quot;m s^-1&quot;)
+</code></pre><p><a href="../#AtomsSystems.CellSystem"><code>CellSystem</code></a> drops global features, but rest is preserved</p><pre><code class="language-julia hljs">CellSystem(sys)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">CellSystem(CHeH₂N, periodicity = TTF):
+    cell_vectors      : [ 1.50304 0.850344 0.717239;
+                          0.36113  1.00814 0.814712;
+                          0.06828 0.381122  2.12908]u&quot;Å&quot;
+
+    SimpleAtom(H,  [0.253703, 0.0443007, -0.244274]u&quot;Å&quot;, [-32519.5, -1.3025e+06,  -762537]u&quot;m s^-1&quot;)
+    SimpleAtom(H,  [0.101984, 0.187666, -2.52207]u&quot;Å&quot;, [  849901, 1.11005e+06,   875324]u&quot;m s^-1&quot;)
+    SimpleAtom(C,  [-0.279265, 0.329242, -0.889473]u&quot;Å&quot;, [  419925,   327240,   523260]u&quot;m s^-1&quot;)
+    SimpleAtom(N,  [-0.15545, 0.242648, -1.55644]u&quot;Å&quot;, [  659675,  -703826,   393001]u&quot;m s^-1&quot;)
+    SimpleAtom(He, [0.731883, 0.515328, -1.99078]u&quot;Å&quot;, [  644789, -1.94016e+06,  -146163]u&quot;m s^-1&quot;)
+</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../atoms/">« Atoms</a><a class="docs-footer-nextpage" href="../utilities/">Utilities »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.13.0 on <span class="colophon-date" title="Saturday 5 July 2025 19:20">Saturday 5 July 2025</span>. Using Julia version 1.11.5.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
