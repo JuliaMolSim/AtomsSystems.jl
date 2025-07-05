@@ -90,7 +90,7 @@ include("Aqua.jl")
         @test all( position(sys, :) .≈ position( ref.system, :) )
         @test all( velocity(sys, :) .≈ velocity( ref.system, :) )
         @test all( species(sys, :) .=== species( ref.system, :) )
-        @test all( mass(sys, :) .≈ mass( ref.system, :) )
+        @test all( AtomsBase.mass(sys, :) .≈ AtomsBase.mass( ref.system, :) )
         @test isa(cell(sys), IsolatedCell)
         @test all( sys[:periodicity] .== (false, false, false) )
         @test_throws KeyError sys[:dummy]
@@ -106,7 +106,7 @@ include("Aqua.jl")
         @test all( position(ss, :) .≈ position(sys, :) )
         @test all( velocity(ss, :) .≈ velocity(sys, :) )
         @test all( species(ss, :) .=== species(sys, :) )
-        @test all( mass(ss, :) .≈ mass(sys, :) )
+        @test all( AtomsBase.mass(ss, :) .≈ AtomsBase.mass(sys, :) )
 
         sv = SimpleVelocitySystem(sys)
         ss = AtomicPropertySystem(sv)
@@ -137,7 +137,7 @@ include("Aqua.jl")
         @test all( position(sys, :) .≈ position( ref.system, :) )
         @test all( velocity(sys, :) .≈ velocity( ref.system, :) )
         @test all( species(sys, :) .=== species( ref.system, :) )
-        @test all( mass(sys, :) .== mass( ref.system, :) )
+        @test all( AtomsBase.mass(sys, :) .== AtomsBase.mass( ref.system, :) )
         @test isa(cell(sys), PeriodicCell)
         @test all( cell_vectors(sys) .≈ ref.cell_vectors )
         @test all( sys[:periodicity] .== ref.periodicity )
@@ -158,7 +158,7 @@ include("Aqua.jl")
         @test isa(sc, AtomsSystems.AbstractIsolatedSystem)
         @test all( position(sc, :) .≈ position(sys, 1:2) )
         @test all( species(sc, :) .=== species(sys, 1:2) )
-        @test all( mass(sc, :) .≈ mass(sys, 1:2) )
+        @test all( AtomsBase.mass(sc, :) .≈ AtomsBase.mass(sys, 1:2) )
 
         sc = CellSystem(sys, ChemicalSpecies(:H))
         @test length(sc) == count( species(sys, :) .== ChemicalSpecies(:H) )
@@ -191,7 +191,7 @@ include("Aqua.jl")
         @test all( position(sys, :) .≈ position( ref.system, :) )
         @test all( velocity(sys, :) .≈ velocity( ref.system, :) )
         @test all( species(sys, :) .=== species( ref.system, :) )
-        @test all( mass(sys, :) .== mass( ref.system, :) )
+        @test all( AtomsBase.mass(sys, :) .== AtomsBase.mass( ref.system, :) )
         @test isa(cell(sys), PeriodicCell)
         @test all( cell_vectors(sys) .≈ ref.cell_vectors )
         @test all( x-> hasatomkey(sys, x), keys(ref.atprop) )
@@ -231,7 +231,7 @@ include("Aqua.jl")
         @test length(sys) == 3
         @test all( position(sys, :) .≈ position(rsys, 1:3) )
         @test all( species(sys, :) .=== species(rsys, 1:3) )
-        @test all( mass(sys, :) .≈ mass(rsys, 1:3) )
+        @test all( AtomsBase.mass(sys, :) .≈ AtomsBase.mass(rsys, 1:3) )
         @test sys[:energy] ≈ 10.0u"eV"
 
         sys = generic_system(rsys, ChemicalSpecies(:H), ChemicalSpecies(:He))
@@ -397,19 +397,19 @@ include("Aqua.jl")
         # distances
         sys = SimpleSystem(ref.system)
         @test distance_vector(sys, 1, 2) ≈ position(sys, 2) - position(sys, 1)
-        distance(sys, 1, 2) ≈ norm( position(sys, 2) - position(sys, 1) )
-        dis = distance(sys, sys)
-        @test dis[1, 2] ≈ distance(sys, 1, 2)
-        @test dis[2, 3] ≈ distance(sys[1:3], 2, 3)
-        @test dis[3, 1] ≈ distance(sys[1:3], 3, 1)
+        AtomsSystems.distance(sys, 1, 2) ≈ norm( position(sys, 2) - position(sys, 1) )
+        dis = AtomsSystems.distance(sys, sys)
+        @test dis[1, 2] ≈ AtomsSystems.distance(sys, 1, 2)
+        @test dis[2, 3] ≈ AtomsSystems.distance(sys[1:3], 2, 3)
+        @test dis[3, 1] ≈ AtomsSystems.distance(sys[1:3], 3, 1)
 
         sys = generic_system(ref.system)
-        dis = distance(sys, 1, :)
-        @test dis[2] ≈ distance(sys, 1, 2)
-        @test dis[3] ≈ distance(sys, 1, 3)
-        dis2 = distance(sys, sys)
-        @test dis2[1, 3] ≈ distance(sys, 1, 3)
-        @test dis2[2, 4] ≈ distance(sys, 2, 4)
+        dis = AtomsSystems.distance(sys, 1, :)
+        @test dis[2] ≈ AtomsSystems.distance(sys, 1, 2)
+        @test dis[3] ≈ AtomsSystems.distance(sys, 1, 3)
+        dis2 = AtomsSystems.distance(sys, sys)
+        @test dis2[1, 3] ≈ AtomsSystems.distance(sys, 1, 3)
+        @test dis2[2, 4] ≈ AtomsSystems.distance(sys, 2, 4)
          
     end
     @testset "SimpleAtom" begin
@@ -417,7 +417,7 @@ include("Aqua.jl")
         va = sys[:]
         @test all( k -> k in atomkeys(sys), atomkeys(va) )
         @test all( k -> k in atomkeys(va), atomkeys(sys) )
-        @test all( mass(va, :) .≈ mass(sys, :) )
+        @test all( AtomsBase.mass(va, :) .≈ AtomsBase.mass(sys, :) )
         @test all( species(va, :) .== species(sys, :) )
         @test all( position(va, :) .≈ position(sys, :) )
         @test all( velocity(va, :) .≈ velocity(sys, :) )
@@ -425,7 +425,7 @@ include("Aqua.jl")
         @test cell(va) isa IsolatedCell
         @test all( periodicity(va) .== (false, false, false) )
         @test all( cell_vectors(va) .≈ cell_vectors(cell(va)) )
-        @test mass(va, 2) ≈ mass(sys, 2)
+        @test AtomsBase.mass(va, 2) ≈ AtomsBase.mass(sys, 2)
         @test species(va, 2) === species(sys, 2)
         @test position(va, 2) ≈ position(sys, 2)
         @test velocity(va, 2) ≈ velocity(sys, 2)
@@ -434,7 +434,7 @@ include("Aqua.jl")
         @test species(sa) === species(va[1])
         @test position(sa) ≈ position(va[1])
         @test velocity(sa) ≈ velocity(va[1])
-        @test mass(sa) == mass(va[1])
+        @test AtomsBase.mass(sa) == AtomsBase.mass(va[1])
         @test haskey(sa, :mark)
         @test sa[:mark] == 4
 
@@ -454,7 +454,7 @@ include("Aqua.jl")
         @test AtomsBase.atomic_symbol(sa) == :C13
         @test AtomsBase.element_symbol(sa) == :C
         @test AtomsBase.atomic_number(sa) == 6
-        @test AtomsBase.mass(sa) ≈ AtomsBase.mass(sp) 
+        @test AtomsBase.AtomsBase.mass(sa) ≈ AtomsBase.AtomsBase.mass(sp) 
 
         sa = SimpleAtom( :H, [0.0, 0.0, 0.0]u"Å" )
         @test species(sa) === ChemicalSpecies(:H)
@@ -466,7 +466,7 @@ include("Aqua.jl")
         @test species(sa) === ChemicalSpecies(:C)
         @test position(sa) ≈ [1.0, 2.0, 3.0]u"Å"
         @test velocity(sa) ≈ [0.1, 0.2, 0.3]u"Å/s"
-        @test mass(sa) == 12.0u"u"
+        @test AtomsBase.mass(sa) == 12.0u"u"
         @test sa[:charge] == -1.0u"q"
         ab = AtomsBase.Atom( :O, [1.0, 0.0, 0.0]u"Å")
         sa2 = SimpleAtom(ab)
@@ -477,7 +477,7 @@ include("Aqua.jl")
         @test species(sa3) === ChemicalSpecies(:C)
         @test position(sa3) ≈ [1.0, 2.0, 3.0]u"Å"
         @test velocity(sa3) ≈ [0.1, 0.2, 0.3]u"Å/s"
-        @test mass(sa3) == 12.0u"u"
+        @test AtomsBase.mass(sa3) == 12.0u"u"
         @test sa3[:charge] == -1.0u"q"
     end
 
@@ -547,13 +547,13 @@ include("Aqua.jl")
             @test all( species(av1, :) .=== species(av, 1:2) )
             @test all( position(av1, :) .≈ position(av, 1:2) )
             @test all( velocity(av1, :) .≈ velocity(av, 1:2) )
-            @test all( mass(av1, :) .≈ mass(av, 1:2) )
+            @test all( AtomsBase.mass(av1, :) .≈ AtomsBase.mass(av, 1:2) )
 
             av = system_view(ap, 2)
             @test species(av, 1) === species(ap, 2)
             @test position(av, 1) ≈ position(ap, 2)
             @test velocity(av, 1) ≈ velocity(ap, 2)
-            @test mass(av, 1) ≈ mass(ap, 2)
+            @test AtomsBase.mass(av, 1) ≈ AtomsBase.mass(ap, 2)
             @test length(av) == 1
         end
         @testset "CellSystemView" begin
@@ -573,7 +573,7 @@ include("Aqua.jl")
             @test all( species(cv1, :) .=== species(cv, 1:2) )
             @test all( position(cv1, :) .≈ position(cv, 1:2) )
             @test all( velocity(cv1, :) .≈ velocity(cv, 1:2) )
-            @test all( mass(cv1, :) .≈ mass(cv, 1:2) )
+            @test all( AtomsBase.mass(cv1, :) .≈ AtomsBase.mass(cv, 1:2) )
             @test all( cell_vectors(cv1) .≈ cell_vectors(cv) )
             @test all( periodicity(cv1) .== periodicity(cv) )
 
@@ -586,10 +586,12 @@ include("Aqua.jl")
             @test species(cv, 1) === species(cs, 2)
             @test position(cv, 1) ≈ position(cs, 2)
             @test velocity(cv, 1) ≈ velocity(cs, 2)
-            @test mass(cv, 1) ≈ mass(cs, 2)
+            @test AtomsBase.mass(cv, 1) ≈ AtomsBase.mass(cs, 2)
             @test cell(cv) == cell(cs)
             @test length(cv) == 1
         end
     end
 
 end
+
+include("chemfiles-extension-tests.jl")

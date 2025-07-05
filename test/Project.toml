@@ -2,6 +2,7 @@
 Aqua = "4c88cf16-eb10-579e-8560-4a9242c79595"
 AtomsBase = "a963bdd2-2df7-4f54-a1ee-49d51e6be12a"
 AtomsBaseTesting = "ed7c10db-df7e-4efa-a7be-4f4190f7f227"
+Chemfiles = "46823bd8-5fb3-5f92-9aa0-96921f3dd015"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 Rotations = "6038ab10-8711-5258-84ad-4b1120ba62dc"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"

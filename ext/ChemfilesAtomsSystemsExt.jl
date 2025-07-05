@@ -1,22 +1,22 @@
-module ChemfilesSimpleAtomsStructuresExt
+module ChemfilesAtomsSystemsExt
 
 using AtomsBase
+using AtomsSystems
 using Chemfiles
-using SimpleAtomsStructures
 using Unitful
 using StaticArrays
 
 
-function SimpleAtomsStructures.SimpleSystem(frame::Chemfiles.Frame)
+function AtomsSystems.SimpleSystem(frame::Chemfiles.Frame)
     pos = positions(frame)
     r = reinterpret(reshape, SVector{3, Float64}, pos) * u"Å"
     spc = map( frame ) do a
         ChemicalSpecies( atomic_number(a) )
     end
-    SimpleAtomsStructures.SimpleSystem(spc, r)
+    AtomsSystems.SimpleSystem(spc, r)
 end
 
-function SimpleAtomsStructures.SimpleVelocitySystem(frame::Chemfiles.Frame)
+function AtomsSystems.SimpleVelocitySystem(frame::Chemfiles.Frame)
     pos = positions(frame)
     r = reinterpret(reshape, SVector{3, Float64}, pos) * u"Å"
     spc = map( frame ) do a
@@ -25,9 +25,9 @@ function SimpleAtomsStructures.SimpleVelocitySystem(frame::Chemfiles.Frame)
     if has_velocities(frame)
         vel = velocities(frame)
         v = reinterpret(reshape, SVector{3, Float64}, vel) * u"Å/ps"
-        return SimpleAtomsStructures.SimpleVelocitySystem(spc, r, v)
+        return AtomsSystems.SimpleVelocitySystem(spc, r, v)
     end
-    return SimpleAtomsStructures.SimpleSystem(spc, r)
+    return AtomsSystems.SimpleSystem(spc, r)
 end
 
 function _load_cell(frame::Chemfiles.Frame)
@@ -41,10 +41,10 @@ function _load_cell(frame::Chemfiles.Frame)
     end 
 end
 
-function SimpleAtomsStructures.CellSystem(frame::Chemfiles.Frame)
-    sys = SimpleAtomsStructures.SimpleVelocitySystem(frame)
+function AtomsSystems.CellSystem(frame::Chemfiles.Frame)
+    sys = AtomsSystems.SimpleVelocitySystem(frame)
     cell = _load_cell(frame)
-    return SimpleAtomsStructures.CellSystem(sys, cell)
+    return AtomsSystems.CellSystem(sys, cell)
 end
 
 end

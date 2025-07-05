@@ -337,6 +337,14 @@ function generic_system(sys::AbstractSystem{D}, v::AbstractVector{<:AbstractVect
     tmp = AtomicPropertySystem(sys)
     vtmp = SimpleVelocitySystem(species(tmp, :), position(tmp, :), v)
     ntmp = _combine_helper(vtmp, tmp)
+    if cell(sys) isa IsolatedCell
+        # Don't pass cell vectors or periodicity
+        t = filter( x -> !in(x, (:cell_vectors, :periodicity)), keys(sys) )
+        if isempty(t)
+            return ntmp
+        end
+        return generic_system(ntmp; (k => sys[k] for k in t)...)
+    end
     return generic_system(ntmp; pairs(sys)...)
 end
 
