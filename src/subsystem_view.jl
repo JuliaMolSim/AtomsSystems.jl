@@ -70,7 +70,7 @@ instead of creating this type directly.
 ```julia
 # Create view of a system with atoms 2 to 30
 subsys = SimpleVelocitySystemView(sys, 2:30)
-````
+```
 """
 mutable struct SimpleVelocitySystemView{D, LU, TP, TV, TI, L} <: AbstractSimpleSystem{D, LU}
     species::SubArray{ChemicalSpecies, 1, Vector{ChemicalSpecies}, TI, L}

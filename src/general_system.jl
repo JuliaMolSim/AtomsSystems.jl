@@ -345,6 +345,11 @@ _combine_helper(bsys::AbstractSimpleSystem, ::AbstractSimpleSystem) = bsys
 
 
 
+function generic_system(atoms::SimpleAtom...; kwargs...)
+    return generic_system(collect(atoms); kwargs...)
+end
+
+
 ##
 
 macro generic_system_str(input::AbstractString)

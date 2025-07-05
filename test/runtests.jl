@@ -303,6 +303,16 @@ include("Aqua.jl")
         @test Set( atomkeys(sys) ) == Set( (:position, :species, :velocity, :mass, :charge) )
         @test Set( atomkeys(sys) ) == Set( atomkeys(atoms) )
 
+        sys = generic_system(
+            SimpleAtom(:O, [-2.1, 0.6, 0.0]u"Å"),
+            SimpleAtom(:H, [-1.4, 0.4, 0.6]u"Å"),
+            SimpleAtom(:H, [-1.8, 1.3, -0.6]u"Å")
+        )
+        @test length(sys) == 3
+        @test species(sys, 1) === ChemicalSpecies(:O)
+        @test species(sys, 2) === ChemicalSpecies(:H)
+        @test species(sys, 3) === ChemicalSpecies(:H)
+
     end
     @testset "Utils" begin
         sys = SimpleSystem(ref.system)
