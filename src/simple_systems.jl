@@ -6,7 +6,7 @@ A simple system that holds only species and positions of atoms, without any addi
 
 SimpleSystem has `IsolatedCell` as its cell.
 
-No intended to be called directly. Intead use `generic_system` to build systems.
+No intended to be called directly. Instead use `generic_system` to build systems.
 
 # Type Parameters
 - `D`: Dimension of the system (e.g., 2 or 3).
@@ -83,7 +83,25 @@ end
 
 
 ##
+"""
+    SimpleVelocitySystem{D, LU, UV, TP, TV} <: AbstractSimpleSystem{D, LU}
 
+System that holds species, positions, and velocities of atoms.
+
+# Type Parameters
+- `D`: Dimension of the system (e.g., 2 or 3).
+- `LU`: Unit of length for positions (LU=unit(TP)).
+- `UV`: Unit of velocity for velocities (UV=unit(TV)).
+- `TP`: Type of position vector, in form of `SVector{D, TP}` where `TP` is a unitful length type.
+- `TV`: Type of velocity vector, in form of `SVector{D, TV}` where `TV` is a unitful velocity type.
+
+No intended to be called directly. Instead use `generic_system` to build systems.
+
+# Fields
+- `species`: A vector of `ChemicalSpecies` representing the species of each atom.
+- `position`: A vector of position vectors, each of type `SVector{D, TP}`.
+- `velocity`: A vector of velocity vectors, each of type `SVector{D, TV}`.
+"""
 mutable struct SimpleVelocitySystem{D, LU, UV, TP, TV} <: AbstractSimpleSystem{D, LU}
     species::Vector{ChemicalSpecies}
     position::Vector{SVector{D, TP}}

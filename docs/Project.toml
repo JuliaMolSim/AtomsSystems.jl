@@ -1,11 +1,13 @@
 [deps]
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
 AtomsBase = "a963bdd2-2df7-4f54-a1ee-49d51e6be12a"
+AtomsBaseTesting = "ed7c10db-df7e-4efa-a7be-4f4190f7f227"
 Rotations = "6038ab10-8711-5258-84ad-4b1120ba62dc"
 Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 
 [compat]
 Documenter = "1"
 AtomsBase = "0.5"
+AtomsBaseTesting = "0.4"
 Rotations = "1.7"
 Unitful = "1"

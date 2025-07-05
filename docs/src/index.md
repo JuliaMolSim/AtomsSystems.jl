@@ -1,6 +1,4 @@
-# AtomsSystems.jl
-
-Documentation for AtomsSystems.jl
+# Index
 
 ```@autodocs
 Modules = [AtomsSystems]

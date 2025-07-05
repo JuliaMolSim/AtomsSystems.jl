@@ -1,4 +1,11 @@
+"""
+    GeneralSystem{D, LU, TB} <: AbstractCompositeSystem{D, LU}
 
+This is the most generic system type that can hold any system properties.
+
+To build this use always the `generic_system` function. This type is meant to be used
+only on the background.
+"""
 mutable struct GeneralSystem{D, LU, TB} <: AbstractCompositeSystem{D, LU}
     base_system::TB
     properties::Dict{Symbol, Any}
@@ -7,6 +14,9 @@ mutable struct GeneralSystem{D, LU, TB} <: AbstractCompositeSystem{D, LU}
         kwargs...
     ) where {D,LU}
         props = Dict{Symbol, Any}( k=>v for (k,v) in pairs(kwargs) if ! in(k, (:cell, :cell_vectors, :periodicity)) )
+        if length(props) == 0 
+            return sys
+        end
         new{D, LU, typeof(sys)}(sys, props)
     end
 end
@@ -135,7 +145,7 @@ function generic_system(sys::AbstractSystem; kwargs...)
     end
 
     tsys = CellSystem( AtomicPropertySystem(sys), new_cell )
-    if length(kwargs) > 0 && length(keys(sys)) == 2
+    if length(kwargs) > 0 && length(keys(sys)) == 2 # only :cell_vectors and :periodicity with old system
         return GeneralSystem(tsys; kwargs...)
     else
         tmp = Dict{Symbol, Any}( k=>sys[k] for k in keys(sys) )
@@ -313,6 +323,31 @@ function generic_system(sys::AbstractSystem, vspc::ChemicalSpecies...; kwargs...
     return tmp
 end
 
+"""
+    generic_system(sys::AbstractSystem{D}, v::AbstractVector{<:AbstractVector{<:Unitful.Velocity}}) where {D}
+
+Create a system from an existing system and a vector of velocities.
+
+This allows you to add velocities to a system while keeping the original system's properties.
+"""
+function generic_system(sys::AbstractSystem{D}, v::AbstractVector{<:AbstractVector{<:Unitful.Velocity}}) where {D}
+    @argcheck length(v) == length(sys) "The length of the velocity vector must match the number of atoms in the system"
+    @argcheck all( length.(v) .== D ) "All velocity vectors must have the same dimension as the system"
+    
+    tmp = AtomicPropertySystem(sys)
+    vtmp = SimpleVelocitySystem(species(tmp, :), position(tmp, :), v)
+    ntmp = _combine_helper(vtmp, tmp)
+    return generic_system(ntmp; pairs(sys)...)
+end
+
+_combine_helper(bsys::AbstractSimpleSystem, sys2::AtomicPropertySystem) = AtomicPropertySystem( bsys, sys2.atom_properties )
+_combine_helper(bsys::AbstractSimpleSystem, ::AbstractSimpleSystem) = bsys
+
+
+
+function generic_system(atoms::SimpleAtom...; kwargs...)
+    return generic_system(collect(atoms); kwargs...)
+end
 
 
 ##

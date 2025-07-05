@@ -8,10 +8,11 @@ makedocs(
     format = Documenter.HTML(),
     modules = [AtomsSystems],
     pages = [
-        "Home" => "index.md",
+        "Home" => "main_page.md",
         "Atoms" => "atoms.md",
         "Systems" => "systems.md",
         "Utilities" => "utilities.md",
+        "Index" => "index.md",
     ],
     checkdocs = :public,
 )

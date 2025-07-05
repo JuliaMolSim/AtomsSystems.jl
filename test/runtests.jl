@@ -78,6 +78,12 @@ include("Aqua.jl")
         @test all( position(sv, 3) .≈ position(sys, 4) )
         @test all( velocity(sv, 3) .≈ velocity(sys, 4) )
         @test species(sv, 3) === species(sys, 4)
+
+        ss = SimpleSystem(sys)
+        sv = generic_system(ss, velocity(sys, :))
+        @test all( position(sv, :) .≈ position(sys, :) )
+        @test all( velocity(sv, :) .≈ velocity(sys, :) )
+        @test all( species(sv, :) .=== species(sys, :) )   
     end
     @testset "AtomicPropertySystem" begin
         sys = AtomicPropertySystem(ref.system)
@@ -242,6 +248,13 @@ include("Aqua.jl")
         @test length(sys) == length(rsys)
         @test all( position(sys, :) .≈ position(rsys, :) )
         @test all( species(sys, :) .=== species(rsys, :) )
+
+        rsys = generic_system(ref.system)
+        ss = generic_system(ref.system, velocity(rsys, :))
+        @test all( position(ss, :) .≈ position(rsys, :) )
+        @test all( velocity(ss, :) .≈ velocity(rsys, :) )
+        @test all( species(ss, :) .=== species(rsys, :) )
+        @test Set( atomkeys(ss) ) == Set( atomkeys(rsys) )
     end
     @testset "Get Started test" begin
         sys = generic_system"""
@@ -289,6 +302,16 @@ include("Aqua.jl")
         @test species(sys, 3) === ChemicalSpecies(:H)
         @test Set( atomkeys(sys) ) == Set( (:position, :species, :velocity, :mass, :charge) )
         @test Set( atomkeys(sys) ) == Set( atomkeys(atoms) )
+
+        sys = generic_system(
+            SimpleAtom(:O, [-2.1, 0.6, 0.0]u"Å"),
+            SimpleAtom(:H, [-1.4, 0.4, 0.6]u"Å"),
+            SimpleAtom(:H, [-1.8, 1.3, -0.6]u"Å")
+        )
+        @test length(sys) == 3
+        @test species(sys, 1) === ChemicalSpecies(:O)
+        @test species(sys, 2) === ChemicalSpecies(:H)
+        @test species(sys, 3) === ChemicalSpecies(:H)
 
     end
     @testset "Utils" begin
@@ -476,6 +499,11 @@ include("Aqua.jl")
             sv1 = system_view(sv, 1:2)
             @test all( species(sv1, :) .=== species(sv, 1:2) )
             @test all( position(sv1, :) .≈ position(sv, 1:2) )   
+
+            sv = system_view(sys1, 2)
+            @test species(sv, 1) === species(sys1, 2)
+            @test position(sv, 1) ≈ position(sys1, 2)
+            @test length(sv) == 1
         end
         @testset "SimpleVelocitySystemView" begin
             sys1 = SimpleVelocitySystem(sys)
@@ -496,6 +524,12 @@ include("Aqua.jl")
             @test all( species(sv1, :) .=== species(sv, 1:2) )
             @test all( position(sv1, :) .≈ position(sv, 1:2) )
             @test all( velocity(sv1, :) .≈ velocity(sv, 1:2) )
+
+            sv = system_view(sys1, 2)
+            @test species(sv, 1) === species(sys1, 2)
+            @test position(sv, 1) ≈ position(sys1, 2)
+            @test velocity(sv, 1) ≈ velocity(sys1, 2)
+            @test length(sv) == 1
         end
         @testset "AtomicPropertySystemView" begin
             ap = AtomicPropertySystem(sys)
@@ -514,6 +548,13 @@ include("Aqua.jl")
             @test all( position(av1, :) .≈ position(av, 1:2) )
             @test all( velocity(av1, :) .≈ velocity(av, 1:2) )
             @test all( mass(av1, :) .≈ mass(av, 1:2) )
+
+            av = system_view(ap, 2)
+            @test species(av, 1) === species(ap, 2)
+            @test position(av, 1) ≈ position(ap, 2)
+            @test velocity(av, 1) ≈ velocity(ap, 2)
+            @test mass(av, 1) ≈ mass(ap, 2)
+            @test length(av) == 1
         end
         @testset "CellSystemView" begin
             cs = CellSystem(sys)
@@ -540,6 +581,14 @@ include("Aqua.jl")
             @test length(cv) == count( species(cs, :) .== ChemicalSpecies(:H) )
             @test all( species(cv, :) .=== ChemicalSpecies(:H) )
             @test cell(cv) == cell(cs)
+
+            cv = system_view(cs, 2)
+            @test species(cv, 1) === species(cs, 2)
+            @test position(cv, 1) ≈ position(cs, 2)
+            @test velocity(cv, 1) ≈ velocity(cs, 2)
+            @test mass(cv, 1) ≈ mass(cs, 2)
+            @test cell(cv) == cell(cs)
+            @test length(cv) == 1
         end
     end
 

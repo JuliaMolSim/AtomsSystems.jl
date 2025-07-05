@@ -5,11 +5,23 @@
 [![codecov](https://codecov.io/gh/JuliaMolSim/AtomsSystems.jl/graph/badge.svg?token=QPK831PYGJ)](https://codecov.io/gh/JuliaMolSim/AtomsSystems.jl)
 
 
+AtomsSystems is meant to provide updated [AtomsBase](https://github.com/JuliaMolSim/AtomsBase.jl)
+systems structures over the standard `FlexibleSystem` and `FastSystem`.
+
+Additionally AtomsSystems provides some useful utilities, like fractional coordinates.
 
 
 ## Get Started
 
-This will get you going, but please look for the [documentation](https://JuliaMolSim.github.io/AtomsSystems.jl/dev) and docstrings for more information.
+There are three commands that will do most of the things you want
+
+- `SimpleAtom` build atoms
+- `generic_system` build system
+- `system_view` take a subsystem from a system without allocating new system
+
+You can look the docstrings for these commands to get going. [Documentation](https://JuliaMolSim.github.io/AtomsSystems.jl/dev) has additional information what you can do, including utility functions.
+
+Here is a quick example on what you can do
 
 ```julia
 using AtomsBase
