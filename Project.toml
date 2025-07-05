@@ -31,4 +31,4 @@ julia = "1.10"
 Chemfiles = "46823bd8-5fb3-5f92-9aa0-96921f3dd015"
 
 [extensions]
-ChemfilesSimpleAtomsStructuresExt = "Chemfiles"
+ChemfilesAtomsSystemsExt = "Chemfiles"
