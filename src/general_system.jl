@@ -1,4 +1,11 @@
+"""
+    GeneralSystem{D, LU, TB} <: AbstractCompositeSystem{D, LU}
 
+This is the most generic system type that can hold any system properties.
+
+To build this use always the `generic_system` function. This type is meant to be used
+only on the background.
+"""
 mutable struct GeneralSystem{D, LU, TB} <: AbstractCompositeSystem{D, LU}
     base_system::TB
     properties::Dict{Symbol, Any}

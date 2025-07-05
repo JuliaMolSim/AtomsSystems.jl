@@ -78,6 +78,12 @@ include("Aqua.jl")
         @test all( position(sv, 3) .≈ position(sys, 4) )
         @test all( velocity(sv, 3) .≈ velocity(sys, 4) )
         @test species(sv, 3) === species(sys, 4)
+
+        ss = SimpleSystem(sys)
+        sv = generic_system(ss, velocity(sys, :))
+        @test all( position(sv, :) .≈ position(sys, :) )
+        @test all( velocity(sv, :) .≈ velocity(sys, :) )
+        @test all( species(sv, :) .=== species(sys, :) )   
     end
     @testset "AtomicPropertySystem" begin
         sys = AtomicPropertySystem(ref.system)
@@ -242,6 +248,13 @@ include("Aqua.jl")
         @test length(sys) == length(rsys)
         @test all( position(sys, :) .≈ position(rsys, :) )
         @test all( species(sys, :) .=== species(rsys, :) )
+
+        rsys = generic_system(ref.system)
+        ss = generic_system(ref.system, velocity(rsys, :))
+        @test all( position(ss, :) .≈ position(rsys, :) )
+        @test all( velocity(ss, :) .≈ velocity(rsys, :) )
+        @test all( species(ss, :) .=== species(rsys, :) )
+        @test Set( atomkeys(ss) ) == Set( atomkeys(rsys) )
     end
     @testset "Get Started test" begin
         sys = generic_system"""
