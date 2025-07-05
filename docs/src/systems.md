@@ -163,7 +163,7 @@ AtomsBase defines funtions to modify structures, the following list is supported
 
 **Example**
 
-```@example sys
+```@example system
 sys = generic_system(
     [:H, :O],
     [[0.0, 0.0, 0.0]u"Å", [1.0, 0.0, 0.0]u"Å"],
@@ -243,10 +243,10 @@ Similarly using [`SimpleVelocitySystem`](@ref) allows limiting to species, posit
 SimpleVelocitySystem(sys)
 ```
 
-[`AtomsPropertySystem`](@ref) preserves all atomic properties, but ignores cell and global features
+[`AtomicPropertySystem`](@ref) preserves all atomic properties, but ignores cell and global features
 
 ```@example system_example
-AtomPropertySystem(sys)
+AtomicPropertySystem(sys)
 ```
 
 [`CellSystem`](@ref) drops global features, but rest is preserved
