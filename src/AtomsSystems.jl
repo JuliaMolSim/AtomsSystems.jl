@@ -59,4 +59,6 @@ include("general_system.jl")
 include("subsystem_view.jl")
 include("utils.jl")
 
+include("trajectory/AtomsTrajectories.jl")
+
 end # module AtomsSystems
