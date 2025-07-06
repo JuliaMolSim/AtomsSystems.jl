@@ -16,7 +16,7 @@ Additionally AtomsSystems provides some useful utilities, like fractional coordi
 There are three commands that will do most of the things you want
 
 - `SimpleAtom` build atoms
-- `generic_system` build system
+- `generic_system` build systems
 - `system_view` take a subsystem from a system without allocating new system
 
 You can look the docstrings for these commands to get going. [Documentation](https://JuliaMolSim.github.io/AtomsSystems.jl/dev) has additional information what you can do, including utility functions.
@@ -50,12 +50,12 @@ sys = generic_system(sys; periodicity=(false, true, false))
 sys = generic_system(sys; energy=1.2u"eV", label="my water")
 ```
 
-### Build Systems with Atomic Features
+Using `SimpleAtoms` gives you better control on what features atoms have
 
 ```julia
 # First build a vector of atoms
 # Syntax is SimpleAtom(species, pos, [vel]; kwords...)
-# or SimpleAtom(species, x, y, z; kwords...) e.g. SimpleAtom(:0, -2.1, 0.6, 0.0)
+# or SimpleAtom(species, x, y, z; kwords...) e.g. SimpleAtom(:O, -2.1, 0.6, 0.0)
 atoms = [
     SimpleAtom(:O, [-2.1, 0.6, 0.0]u"Å"; mass=16.5u"u" )
     SimpleAtom(:H, [-1.4, 0.4, 0.6]u"Å"; mass=2.3u"u"  )
