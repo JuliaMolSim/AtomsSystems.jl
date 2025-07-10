@@ -21,7 +21,10 @@ using Test
     @test all( velocity(trj[2], :) .≈ velocity(sys2, :) )
     @test cell(trj[1]) == cell(sys)
     @test cell(trj[1]) == cell(sys2) 
-    @test all( AtomsSystems.distance(trj, 1, 2, 1:2) .≈ AtomsSystems.distance(trj, 1, 2, :) )
-    @test all( bond_angle(trj, 1, 2, 3, 1:2) .≈ bond_angle(trj, 1, 2, 3, :) )
-    @test all( dihedral_angle(trj, 1, 2, 3, 4, 1:2) .≈ dihedral_angle(trj, 1, 2, 3, 4, :) )
+    @test AtomsSystems.distance(trj[1], 1, 2) ≈ AtomsSystems.distance(sys, 1, 2)
+    @test AtomsSystems.distance(trj[2], 1, 2) ≈ AtomsSystems.distance(sys2, 1, 2)
+    @test AtomsSystems.bond_angle(trj[1], 1, 2, 3) ≈ AtomsSystems.bond_angle(sys, 1, 2, 3)
+    @test AtomsSystems.bond_angle(trj[2], 1, 2, 3) ≈ AtomsSystems.bond_angle(sys2, 1, 2, 3)
+    @test AtomsSystems.dihedral_angle(trj[1], 1, 2, 3, 4) ≈ AtomsSystems.dihedral_angle(sys, 1, 2, 3, 4)
+    @test AtomsSystems.dihedral_angle(trj[2], 1, 2, 3, 4) ≈ AtomsSystems.dihedral_angle(sys2, 1, 2, 3, 4)   
 end
