@@ -117,4 +117,41 @@ function AtomsSystems.AtomsTrajectories.ConstantVolumeTrajectory(fname::Abstract
 end
 
 
+function AtomsSystems.AtomsTrajectories.VariableVolumeTrajectory(fname::AbstractString; species_from=nothing)
+    ttraj = Chemfiles.Trajectory(fname)
+    first_frame = Chemfiles.read_step(ttraj, 0)
+    sys = AtomsSystems.CellSystem(first_frame)
+    ntraj = AtomsSystems.AtomsTrajectories.VariableVolumeTrajectory(sys)
+    if has_velocities(first_frame)
+        for frame in Iterators.drop(ttraj, 1)
+            pos = positions(frame) * u"Å"
+            vel = velocities(frame) * u"Å/ps"
+            r = reinterpret(reshape, SVector{3, Float64}, pos) * u"Å"
+            v = reinterpret(reshape, SVector{3, Float64}, vel) * u"Å/ps"
+            tcell = _load_cell(frame)
+            append!(ntraj, r, v, tcell)
+        end
+    else
+        for frame in Iterators.drop(ttraj, 1)
+            pos = positions(frame) * u"Å"
+            r = reinterpret(reshape, SVector{3, Float64}, pos) * u"Å"
+            tcell = _load_cell(frame)
+            append!(ntraj, r, tcell)
+        end
+    end
+    if isnothing(species_from)
+        return ntraj
+    end
+    tmp_traj = Chemfiles.Trajectory(species_from)
+    frame = Chemfiles.read(tmp_traj)
+    tmp = AtomsSystems.SimpleSystem(frame)
+    sys = ntraj[1]
+    if length(tmp) == length(sys)
+        AtomsBase.set_species!(sys, :, species(tmp, :))
+        return ntraj
+    end
+    error("Species vector length does not match the number of atoms in the trajectory")
+end
+
+
 end

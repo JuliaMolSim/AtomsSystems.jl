@@ -44,10 +44,35 @@ function Base.append!(traj::VariableVolumeTrajectory{D, LU, TP}, sys::AbstractSy
     return traj
 end
 
+function Base.append!(
+        traj::VariableVolumeTrajectory{D,LU,TP,TB},
+        pos::AbstractVector{SVector{D, TP}},
+        vel::AbstractVector{SVector{D, TV}},
+        cell::PeriodicCell{D, TP}
+    ) where {D, LU, TP<:Unitful.Length, TV<:Unitful.Velocity, TB<:SimpleVelocityTrajectory}
+    append!(traj.base_trajectory, pos, vel)
+    push!(traj.cell, cell)
+    return traj
+end
+
+function Base.append!(
+        traj::VariableVolumeTrajectory{D,LU,TP,TB},
+        pos::AbstractVector{SVector{D, TP}},
+        cell::PeriodicCell{D, TP}
+    ) where {D, LU, TP, TB<:SimpleTrajectory}
+    append!(traj.base_trajectory, pos)
+    push!(traj.cell, cell)
+    return traj
+end
+
 
 function Base.eltype(traj::VariableVolumeTrajectory{D, LU, TP, TB}) where {D, LU, TP, TB}
     return AtomsSystems.CellSystemView{D, LU, eltype(traj.base_trajectory), PeriodicCell{D, TP}}   
 end
+
+
+Base.show(io::IO, trj::VariableVolumeTrajectory) =
+    print(io, "VariableVolumeTrajectory with ", length(trj), " frames of ", n_atoms(trj), " atoms")
 
 
 ##
