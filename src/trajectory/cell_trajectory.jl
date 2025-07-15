@@ -1,4 +1,35 @@
 
+"""
+    VariableVolumeTrajectory{D, LU, TP, TB} <: AbstractCellTrajectory{D, LU, TP}
+
+A trajectory that allows volume changes.
+This is done by storing cell for each frame separately.
+
+Cells are `PeriodicCell`. For isolates cell trajectories the return type is either
+`SimpleTrajectory` or `SimpleVelocityTrajectory`.
+
+Chemfiles extension provides a way to read trajectories from files.
+
+# Type Parameters
+- `D`: Dimension of the system (e.g., 2 or 3).
+- `LU`: Unit of length for positions.
+- `TP`: Type of positions `Unitful.Length`.
+- `TB`: Type of the base trajectory, which is a `SimpleVelocityTrajectory` or `SimpleTrajectory`.
+
+# Fields
+- `base_trajectory`: The base trajectory, which is either a `SimpleVelocityTrajectory` or a `SimpleTrajectory`.
+- `cell`: A vector of periodic cells, one for each frame
+
+# Example
+```julia
+traj = VariableVolumeTrajectory(first_frame)
+append!(traj, second_frame)
+
+# Chemfiles extension
+using Chemfiles
+traj = ConstantVolumeTrajectory("path/to/trajectory")
+```
+"""
 mutable struct VariableVolumeTrajectory{D, LU, TP, TB} <: AbstractCellTrajectory{D, LU, TP}
     base_trajectory::TB
     cell::Vector{PeriodicCell{D, TP}}
@@ -13,15 +44,13 @@ mutable struct VariableVolumeTrajectory{D, LU, TP, TB} <: AbstractCellTrajectory
     end
 end
 
-function VariableVolumeTrajectory(sys)
+function VariableVolumeTrajectory(sys::AbstractSystem)
     base = SimpleVelocityTrajectory(sys)
     if ! (cell(sys) isa PeriodicCell)
         return base
     end
     return VariableVolumeTrajectory(base, cell(sys))
 end
-
-@inline n_atoms(sys::AbstractCellTrajectory) = n_atoms(sys.base_trajectory)
 
 Base.size(sys::AbstractCellTrajectory) = size(sys.base_trajectory)
 
@@ -77,6 +106,34 @@ Base.show(io::IO, trj::VariableVolumeTrajectory) =
 
 ##
 
+"""
+    ConstantVolumeTrajectory{D, LU, TP, TB} <: AbstractCellTrajectory{D, LU, TP}
+
+A trajectory with constant cell. Use `VariableVolumeTrajectory` for trajectories with changing cell.
+
+This should be used only if you know that the cell does not change during the trajectory.
+It is a bit more efficient than `VariableVolumeTrajectory` because it only stores once cell for the whole trajectory.
+
+# Type Parameters
+- `D`: Dimension of the system (e.g., 2 or 3).
+- `LU`: Unit of length for positions.
+- `TP`: Type of positions `Unitful.Length`.
+- `TB`: Type of the base trajectory, which is a `SimpleVelocityTrajectory` or `SimpleTrajectory`.
+
+# Fields
+- `base_trajectory`: The base trajectory, which is either a `SimpleVelocityTrajectory` or a `SimpleTrajectory`.
+- `cell`: The periodic cell that defines the boundaries and periodicity for the trajectory.
+
+# Example
+```julia
+traj = ConstantVolumeTrajectory(first_frame)
+append!(traj, second_frame) 
+
+# Chemfiles extension
+using Chemfiles
+traj = ConstantVolumeTrajectory("path/to/trajectory")
+```
+"""
 mutable struct ConstantVolumeTrajectory{D, LU, TP, TB} <: AbstractCellTrajectory{D, LU, TP}
     base_trajectory::TB
     cell::PeriodicCell{D, TP}

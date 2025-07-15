@@ -113,17 +113,16 @@ function AtomsSystems.AtomsTrajectories.ConstantVolumeTrajectory(fname::Abstract
         AtomsBase.set_species!(sys, :, species(tmp, :))
         return traj
     end
-    error("Species vector length does not match the number of atoms in the trajectory")
+   throw( DimensionMismatch("Species vector length does not match the number of atoms in the trajectory") )
 end
 
 
-function AtomsSystems.AtomsTrajectories.VariableVolumeTrajectory(fname::AbstractString; species_from=nothing)
-    ttraj = Chemfiles.Trajectory(fname)
-    first_frame = Chemfiles.read_step(ttraj, 0)
+function AtomsSystems.AtomsTrajectories.VariableVolumeTrajectory(traj::Chemfiles.Trajectory)
+    first_frame = Chemfiles.read_step(traj, 0)
     sys = AtomsSystems.CellSystem(first_frame)
     ntraj = AtomsSystems.AtomsTrajectories.VariableVolumeTrajectory(sys)
     if has_velocities(first_frame)
-        for frame in Iterators.drop(ttraj, 1)
+        for frame in Iterators.drop(traj, 1)
             pos = positions(frame) * u"Å"
             vel = velocities(frame) * u"Å/ps"
             r = reinterpret(reshape, SVector{3, Float64}, pos) * u"Å"
@@ -132,13 +131,21 @@ function AtomsSystems.AtomsTrajectories.VariableVolumeTrajectory(fname::Abstract
             append!(ntraj, r, v, tcell)
         end
     else
-        for frame in Iterators.drop(ttraj, 1)
+        for frame in Iterators.drop(traj, 1)
             pos = positions(frame) * u"Å"
             r = reinterpret(reshape, SVector{3, Float64}, pos) * u"Å"
             tcell = _load_cell(frame)
             append!(ntraj, r, tcell)
         end
     end
+    return ntraj
+end
+
+function AtomsSystems.AtomsTrajectories.VariableVolumeTrajectory(fname::AbstractString; species_from=nothing)
+    traj = Chemfiles.Trajectory(fname)
+    ntraj = AtomsSystems.AtomsTrajectories.VariableVolumeTrajectory(traj)
+
+    # Update species if species_from is provided
     if isnothing(species_from)
         return ntraj
     end
@@ -150,7 +157,7 @@ function AtomsSystems.AtomsTrajectories.VariableVolumeTrajectory(fname::Abstract
         AtomsBase.set_species!(sys, :, species(tmp, :))
         return ntraj
     end
-    error("Species vector length does not match the number of atoms in the trajectory")
+    throw( DimensionMismatch("Species vector length does not match the number of atoms in the trajectory") )
 end
 
 

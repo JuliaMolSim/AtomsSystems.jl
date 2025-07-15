@@ -1,8 +1,22 @@
+"""
+    SimpleTrajectory{D, LU, TP} <: AbstractSimpleTrajectory{D, LU, TP}
 
+A simple trajectory that contains only positions and species of atoms.
+
+This trajectory has isolated cell and is used to layer on top of other trajectories that have more complex cell structures.
+
+# Type Parameters
+- `D`: Dimension of the system (e.g., 2 or 3).
+- `LU`: Unit of length for positions.
+- `TP`: Type of positions, which is a `Unitful.Length`.
+
+# Fields
+- `species`: A vector of `ChemicalSpecies` representing the species of atoms in the trajectory.
+- `position`: A vector of `SVector{D, TP}` representing the positions of atoms in the trajectory.
+"""
 mutable struct SimpleTrajectory{D, LU, TP} <: AbstractSimpleTrajectory{D, LU, TP}
     species::Vector{ChemicalSpecies}
     position::Vector{SVector{D, TP}}
-    n_atoms::Int
     function SimpleTrajectory(
         species::AbstractVector{ChemicalSpecies},
         positions::AbstractVector{SVector{D, TP}}
@@ -11,7 +25,7 @@ mutable struct SimpleTrajectory{D, LU, TP} <: AbstractSimpleTrajectory{D, LU, TP
         n_atoms = length(species)
         @argcheck length(positions) == n_atoms "Number of positions must match number of species"
         LU = unit(TP)
-        new{D, LU, TP}(deepcopy(species), deepcopy(positions), n_atoms)
+        new{D, LU, TP}(deepcopy(species), deepcopy(positions))
     end
 end
 
@@ -42,6 +56,14 @@ function Base.append!(traj::SimpleTrajectory{D}, pos::AbstractVector{SVector{D, 
     return traj
 end
 
+function Base.append!(
+        traj::SimpleTrajectory{D},
+        pos::AbstractVector{SVector{D, TP}},
+        ::IsolatedCell{D}
+    ) where {D, TP<:Unitful.Length}
+    append!(traj, pos)
+end
+
 function Base.append!(traj::SimpleTrajectory{D}, sys::AbstractSystem{D}) where {D}
     @argcheck length(sys) == n_atoms(traj) "System must have the same number of atoms as the trajectory"
     @argcheck all(species(sys, :) .=== traj.species) "Species must match the trajectory species"
@@ -56,11 +78,11 @@ end
 
 function Base.getindex(traj::SimpleTrajectory, i::Int)
     @argcheck i >= 1 && i <= length(traj) BoundsError(traj, i)
-    k = traj.n_atoms * (i-1) +1  : traj.n_atoms * i
-    return AtomsSystems.SimpleSystemView(view(traj.species, 1:traj.n_atoms), view(traj.position, k))
+    k = n_atoms(traj) * (i-1) +1  : n_atoms(traj) * i
+    return AtomsSystems.SimpleSystemView(view(traj.species, 1:n_atoms(traj) ), view(traj.position, k))
 end
 
-Base.size(traj::AbstractSimpleTrajectory) = (Int(length(traj.position)//traj.n_atoms), )
+Base.size(traj::AbstractSimpleTrajectory) = (Int(length(traj.position)//n_atoms(traj)), )
 
 
 Base.show(io::IO, trj::SimpleTrajectory) =
@@ -68,11 +90,28 @@ Base.show(io::IO, trj::SimpleTrajectory) =
 
 ##
 
+"""
+    SimpleVelocityTrajectory{D, LU, TP, TV} <: AbstractSimpleTrajectory{D, LU, TP}
+
+A simple trajectory that contains positions, velocities and species of atoms.
+
+This trajectory has isolated cell and is used to layer on top of other trajectories that have more complex cell structures.
+
+# Type Parameters
+- `D`: Dimension of the system (e.g., 2 or 3).
+- `LU`: Unit of length for positions.
+- `TP`: Type of positions, which is a `Unitful.Length`.
+- `TV`: Type of velocities, which is a `Unitful.Velocity`.
+
+# Fields
+- `species`: A vector of `ChemicalSpecies` representing the species of atoms in the trajectory  
+- `position`: A vector of `SVector{D, TP}` representing the positions of atoms in the trajectory.
+- `velocity`: A vector of `SVector{D, TV}` representing the velocities of atoms in the trajectory.
+"""
 mutable struct SimpleVelocityTrajectory{D, LU, TP, TV} <: AbstractSimpleTrajectory{D, LU, TP}
     species::Vector{ChemicalSpecies}
     position::Vector{SVector{D, TP}}
     velocity::Vector{SVector{D, TV}}
-    n_atoms::Int
     function SimpleVelocityTrajectory(
         species::AbstractVector{ChemicalSpecies}, 
         positions::AbstractVector{SVector{D, TP}}, 
@@ -83,7 +122,7 @@ mutable struct SimpleVelocityTrajectory{D, LU, TP, TV} <: AbstractSimpleTrajecto
         @argcheck length(positions) == n_atoms "Number of positions must match number of species"
         @argcheck length(velocities) == n_atoms "Number of velocities must match number of species"
         LU = unit(TP)
-        new{D, LU, TP, TV}(deepcopy(species), deepcopy(positions), deepcopy(velocities), n_atoms)
+        new{D, LU, TP, TV}(deepcopy(species), deepcopy(positions), deepcopy(velocities))
     end
 end
 
@@ -127,6 +166,15 @@ function Base.append!(
     return traj
 end
 
+function Base.append!(
+    traj::SimpleVelocityTrajectory{D},
+    pos::AbstractVector{SVector{D, TP}},
+    vel::AbstractVector{SVector{D, TV}},
+    ::IsolatedCell{D}
+) where {D, TP<:Unitful.Length, TV<:Unitful.Velocity}
+    append!(traj, pos, vel)
+end
+
 function Base.append!(traj::SimpleVelocityTrajectory{D}, sys::AbstractSystem{D}) where {D}
     @argcheck length(sys) == n_atoms(traj) "System must have the same number of atoms as the trajectory"
     @argcheck all(species(sys, :) .=== traj.species) "Species must match the trajectory species"
@@ -139,9 +187,9 @@ end
 
 function Base.getindex(traj::SimpleVelocityTrajectory, i::Int)
     @argcheck i >= 1 && i <= length(traj) BoundsError(traj, i)
-    k = traj.n_atoms * (i-1) +1  : traj.n_atoms * i
+    k = n_atoms(traj) * (i-1) +1  : n_atoms(traj) * i
     return AtomsSystems.SimpleVelocitySystemView(
-        view(traj.species, 1:traj.n_atoms), 
+        view(traj.species, 1: n_atoms(traj) ), 
         view(traj.position, k), 
         view(traj.velocity, k)
     )
