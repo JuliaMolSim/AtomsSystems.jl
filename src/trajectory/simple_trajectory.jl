@@ -44,7 +44,7 @@ function SimpleTrajectory(traj::AbstractVector{<:AbstractSystem})
         position(first_frame, :)
     )
     for frame in Iterators.drop(traj, 1)
-        append!(tmp, frame)
+        push!(tmp, frame)
     end
     return tmp
 end
@@ -64,7 +64,7 @@ function Base.append!(
     append!(traj, pos)
 end
 
-function Base.append!(traj::SimpleTrajectory{D}, sys::AbstractSystem{D}) where {D}
+function Base.push!(traj::SimpleTrajectory{D}, sys::AbstractSystem{D}) where {D}
     @argcheck length(sys) == n_atoms(traj) "System must have the same number of atoms as the trajectory"
     @argcheck all(species(sys, :) .=== traj.species) "Species must match the trajectory species"
     return Base.append!(traj, position(sys, :))    
@@ -86,9 +86,7 @@ Base.size(traj::AbstractSimpleTrajectory) = (Int(length(traj.position)//n_atoms(
 
 
 Base.show(io::IO, trj::SimpleTrajectory) =
-    print(io, "SimpleTrajectory with ", length(trj), " frames of ", n_atoms(trj), " atoms")
-
-##
+    print(io, "SimpleTrajectory with ", length(trj), " frames, each with ", n_atoms(trj), " atoms")
 
 """
     SimpleVelocityTrajectory{D, LU, TP, TV} <: AbstractSimpleTrajectory{D, LU, TP}
@@ -147,7 +145,7 @@ function SimpleVelocityTrajectory(traj::AbstractVector{<:AbstractSystem})
             velocity(first_frame, :)
         )
         for frame in Iterators.drop(traj, 1)
-            append!(tmp, frame)
+            push!(tmp, frame)
         end
         return tmp
     end
@@ -175,7 +173,7 @@ function Base.append!(
     append!(traj, pos, vel)
 end
 
-function Base.append!(traj::SimpleVelocityTrajectory{D}, sys::AbstractSystem{D}) where {D}
+function Base.push!(traj::SimpleVelocityTrajectory{D}, sys::AbstractSystem{D}) where {D}
     @argcheck length(sys) == n_atoms(traj) "System must have the same number of atoms as the trajectory"
     @argcheck all(species(sys, :) .=== traj.species) "Species must match the trajectory species"
     return Base.append!(traj, position(sys, :), velocity(sys, :))    
@@ -197,4 +195,4 @@ end
     
         
 Base.show(io::IO, trj::SimpleVelocityTrajectory) =
-    print(io, "SimpleVelocityTrajectory with ", length(trj), " frames of ", n_atoms(trj), " atoms")
+    print(io, "SimpleVelocityTrajectory with ", length(trj), " frames, each with ", n_atoms(trj), " atoms")

@@ -23,7 +23,7 @@ Chemfiles extension provides a way to read trajectories from files.
 # Example
 ```julia
 traj = VariableVolumeTrajectory(first_frame)
-append!(traj, second_frame)
+push!(traj, second_frame)
 
 # Chemfiles extension
 using Chemfiles
@@ -52,6 +52,16 @@ function VariableVolumeTrajectory(sys::AbstractSystem)
     return VariableVolumeTrajectory(base, cell(sys))
 end
 
+function VariableVolumeTrajectory(systems::AbstractVector{<:AbstractSystem})
+    tmp = VariableVolumeTrajectory(systems[begin])
+    for frame in Iterators.drop(systems, 1)
+        push!(tmp, frame)
+    end
+    return tmp
+    
+end
+
+
 Base.size(sys::AbstractCellTrajectory) = size(sys.base_trajectory)
 
 function Base.getindex(sys::VariableVolumeTrajectory, i::Int)
@@ -62,13 +72,13 @@ function Base.getindex(sys::VariableVolumeTrajectory, i::Int)
     )
 end
 
-function Base.append!(traj::VariableVolumeTrajectory{D, LU, TP}, sys::AbstractSystem{D}) where {D, LU, TP}
+function Base.push!(traj::VariableVolumeTrajectory{D, LU, TP}, sys::AbstractSystem{D}) where {D, LU, TP}
     @argcheck length(sys) == n_atoms(traj) "System must have the same number of atoms as the trajectory"
     if cell(sys) isa PeriodicCell{D, TP}
-        append!(traj.base_trajectory, sys)
+        push!(traj.base_trajectory, sys)
         push!(traj.cell, cell(sys))
     else
-        error("System must have a periodic cell to append to a VariableVolumeTrajectory") 
+        error("System must have a periodic cell to push to a VariableVolumeTrajectory") 
     end
     return traj
 end
@@ -101,7 +111,7 @@ end
 
 
 Base.show(io::IO, trj::VariableVolumeTrajectory) =
-    print(io, "VariableVolumeTrajectory with ", length(trj), " frames of ", n_atoms(trj), " atoms")
+    print(io, "VariableVolumeTrajectory with ", length(trj), " frames, each with ", n_atoms(trj), " atoms")
 
 
 ##
@@ -127,7 +137,7 @@ It is a bit more efficient than `VariableVolumeTrajectory` because it only store
 # Example
 ```julia
 traj = ConstantVolumeTrajectory(first_frame)
-append!(traj, second_frame) 
+push!(traj, second_frame) 
 
 # Chemfiles extension
 using Chemfiles
@@ -176,12 +186,12 @@ function Base.getindex(sys::ConstantVolumeTrajectory, i::Int)
 end
 
 
-function Base.append!(traj::ConstantVolumeTrajectory{D, LU, TP}, sys::AbstractSystem{D}) where {D, LU, TP}
+function Base.push!(traj::ConstantVolumeTrajectory{D, LU, TP}, sys::AbstractSystem{D}) where {D, LU, TP}
     @argcheck length(sys) == n_atoms(traj) "System must have the same number of atoms as the trajectory"
     if cell(sys) == traj.cell
-        append!(traj.base_trajectory, sys)
+        push!(traj.base_trajectory, sys)
     else
-        error("System cell must match the trajectory cell to append") 
+        error("System cell must match the trajectory cell to push") 
     end
     return traj
 end
@@ -191,4 +201,4 @@ function Base.eltype(traj::ConstantVolumeTrajectory{D, LU, TP, TB}) where {D, LU
 end
 
 Base.show(io::IO, trj::ConstantVolumeTrajectory) =
-    print(io, "ConstantVolumeTrajectory with ", length(trj), " frames of ", n_atoms(trj), " atoms")
+    print(io, "ConstantVolumeTrajectory with ", length(trj), " frames, each with ", n_atoms(trj), " atoms")
