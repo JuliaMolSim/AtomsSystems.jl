@@ -12,18 +12,29 @@ using Chemfiles
 
 # read a frame
 sys = Trajectory("example.xyz") do trajectory
-    frame = read(trajectory)
+    frame = read(trajectory, 0) # adjust to read a different frame
     CellSystem(frame)
 end
+```
 
+## Trajectories with Chemfiles
 
-# Read the whole trajectory
-# Note this can be slow!
-traj = Trajectory("example.xyz") do trajectory
-    map(trajectory) do frame
-        SimpleSystem(frame)
-        # or SimpleVelocitySystem(frame)
-        # or CellSystem(frame)
-    end
-end
+Trajectories have an extension that allows them to be loaded directly from a file
+
+```julia
+using AtomsSystems
+using AtomsSystems.AtomsTrajectories
+using Chemfiles
+
+# Works with all Chemfiles supported trajectories
+traj = VariableVolumeTrajectory("trajectory file")
+
+# If you know the trajectory has constant volume
+traj = ConstantVolumeTrajectory("trajectory file") 
+```
+
+You can also give keyword argument `species_from` that allows loading species information form a different file
+
+```julia
+traj = VariableVolumeTrajectory("trajectory file"; species_from="file with species information")
 ```

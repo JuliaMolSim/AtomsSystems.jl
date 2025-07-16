@@ -1,6 +1,6 @@
 # Index
 
 ```@autodocs
-Modules = [AtomsSystems]
+Modules = [AtomsSystems, AtomsSystems.AtomsTrajectories]
 Order   = [:function, :type]
 ```

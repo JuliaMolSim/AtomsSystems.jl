@@ -594,4 +594,6 @@ include("Aqua.jl")
 
 end
 
+include("trajectory-tests.jl")
+
 include("chemfiles-extension-tests.jl")
