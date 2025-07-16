@@ -1,12 +1,13 @@
 using Documenter
 using AtomsSystems
+using AtomsSystems.AtomsTrajectories
 using AtomsBase
 using Unitful
 
 makedocs(
     sitename = "AtomsSystems",
     format = Documenter.HTML(),
-    modules = [AtomsSystems],
+    modules = [AtomsSystems, AtomsSystems.AtomsTrajectories ],
     pages = [
         "Home" => "index.md",
         "Atoms" => "atoms.md",
