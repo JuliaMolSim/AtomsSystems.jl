@@ -13,6 +13,7 @@ makedocs(
         "Atoms" => "atoms.md",
         "Systems" => "systems.md",
         "Utilities" => "utilities.md",
+        "Trajectories" => "trajectory.md",
         "Chemfiles Extension" => "chemfiles.md",
         "Index" => "end_index.md",
     ],
