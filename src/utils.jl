@@ -481,8 +481,8 @@ Base.repeat(sys::CellSystem{3}, n::Integer) = Base.repeat(sys, (n,n,n))
 ##
 
 """ 
-    rattle(sys, q)
-    rattle!(sys, q)
+    rattle_system(sys, q)
+    rattle_system!(sys, q)
 
 Rattle the positions of atoms in the system `sys` by a random vector of length `q`.
 The random vector is in random uniform direction and uniform length in the range `0 <= r < q`.
@@ -506,4 +506,4 @@ function rattle_system(sys::AbstractSystem, q)
     return tmp  
 end
 
-@doc (@doc rattle!) rattle
+@doc (@doc rattle_system!) rattle_system
