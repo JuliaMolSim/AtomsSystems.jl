@@ -160,6 +160,7 @@ AtomsBase defines funtions to modify structures, the following list is supported
 - `set_cell_vectors!(system, bb)` - same as for `set_cell`
 - `set_periodicity!(cell, pbc)` - same as for `set_cell`
 - `append!(system1, system2)` - if systems have same information fields (e.g. both have velocity), same cell and dont have global features.
+- `deleteat!(system, i)` - all systems excluding system views.
 
 **Example**
 

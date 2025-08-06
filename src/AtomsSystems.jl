@@ -37,6 +37,8 @@ export fractional_coordinates_as_matrix
 export generic_system
 export inv_cell
 export position_as_matrix
+export rattle_system
+export rattle_system!
 export rotate_system
 export rotate_system!
 export system_view

@@ -18,6 +18,10 @@ rotate_system!(sys, rot)
 
 # rotate a copy of the system
 rotate_system(sys, rot)
+
+# rattle positions
+rattle_system(sys, 0.1)
+rattle_system!(sys, 0.1u"Å")
 ```
 
 **Add system together or repeat them**

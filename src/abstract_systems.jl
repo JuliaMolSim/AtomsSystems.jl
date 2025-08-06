@@ -76,3 +76,8 @@ function AtomsBase.set_velocity!(sys::AbstractCompositeSystem, i, x)
     AtomsBase.set_velocity!(sys.base_system, i, x)
     return sys
 end
+
+function Base.deleteat!(sys::AbstractCompositeSystem, i)
+    Base.deleteat!(sys.base_system, i)
+    return sys
+end

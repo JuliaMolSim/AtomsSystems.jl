@@ -40,7 +40,7 @@ end
 SimpleSystem(sys::SimpleSystem) = deepcopy(sys)
 
 function SimpleSystem(ss::Union{AbstractSystem,AtomsVector}, i)
-    return SimpleSystem(species(ss, i), position(ss, i))
+    return SimpleSystem( deepcopy( species(ss, i) ), deepcopy( position(ss, i) ))
 end
 
 SimpleSystem(sys::Union{AbstractSystem, AtomsVector}) = SimpleSystem(sys, :)
@@ -135,7 +135,7 @@ function SimpleVelocitySystem(sys::Union{AbstractSystem, AtomsVector}, i)
         scp = species(sys, i)
         pos = position(sys, i)
         vel = velocity(sys, i)
-        return SimpleVelocitySystem(scp, pos, vel)
+        return SimpleVelocitySystem( deepcopy(scp), deepcopy(pos), deepcopy(vel) )
     else
         return SimpleSystem(sys, i)
     end

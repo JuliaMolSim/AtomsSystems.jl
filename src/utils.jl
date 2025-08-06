@@ -476,3 +476,34 @@ function Base.repeat(sys::CellSystem{3}, n::NTuple{3,<:Integer})
 end
 
 Base.repeat(sys::CellSystem{3}, n::Integer) = Base.repeat(sys, (n,n,n))
+
+
+##
+
+""" 
+    rattle_system(sys, q)
+    rattle_system!(sys, q)
+
+Rattle the positions of atoms in the system `sys` by a random vector of length `q`.
+The random vector is in random uniform direction and uniform length in the range `0 <= r < q`.
+
+If `q` is not a `Unitful.Length`, it is assumed to be in the unit of the positions in the system.
+"""
+function rattle_system!(sys::AbstractSystem{D}, q) where{D}
+    r0 = position(sys, 1)
+    r0 = r0 ./ ustrip( norm(r0) )
+    r0 *= isa(q, Unitful.Length) ? ustrip(unit(r0[1]), q) : q
+    for i in 1:length(sys)
+        r = position(sys, i)
+        r += rand(RotMatrix{D}) * r0 * rand()
+        AtomsBase.set_position!(sys, i, r)
+    end
+end
+
+function rattle_system(sys::AbstractSystem, q)
+    tmp = deepcopy(sys)
+    rattle_system!(tmp, q)
+    return tmp  
+end
+
+@doc (@doc rattle_system!) rattle_system
