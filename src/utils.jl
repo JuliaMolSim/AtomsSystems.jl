@@ -495,7 +495,7 @@ function rattle_system!(sys::AbstractSystem{D}, q) where{D}
     r0 *= isa(q, Unitful.Length) ? ustrip(unit(r0[1]), q) : q
     for i in 1:length(sys)
         r = position(sys, i)
-        r += rand(RotMatrix{D, Float64}) * r0 * rand()
+        r += rand(RotMatrix{D}) * r0 * rand()
         AtomsBase.set_position!(sys, i, r)
     end
 end
