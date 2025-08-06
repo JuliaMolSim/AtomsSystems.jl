@@ -292,8 +292,9 @@ end
 distance_vector(::IsolatedCell{D}, r::SVector{D}) where{D} = r
 
 function distance_vector(cell::PeriodicCell{D}, r::SVector{D}) where{D}
-    wrap(x) = x > 0 ? x-ceil(x)+1 : x-floor(x) # 0 <= x < 1
+    wrap(x) = x > 0 ? x-ceil(x)+1 : x-floor(x) # wrap into the cell or 0 <= x < 1
     function dwrap(x) # distance wrap. x ∈ [-0.5, 0.5]
+        # that is distance is max abs(0.5) in each coordinate 
         if x > 0.5
             return x - 1
         elseif x < -0.5

@@ -144,14 +144,14 @@ syb_sys = system_view(sys, 1:5)
 sub_sys = system_view(sys, ChemicalSpecies(:H), ChemicalSpecies(:O))
 ```
 
-Any changes you make to `system_view` structures is made to host system and vise versa.
+Any changes you make to `system_view` structures is made to the host system and vise versa.
 
 Note that `system_view` does not see the global features of the host system.
 
 
 ## Changing Systems
 
-AtomsBase defines funtions to modify structures, the following list is supported
+AtomsBase defines funtions to modify structures, the following list is supported:
 
 - `set_position!(system, i, x)` - all structures
 - `set_velocity!(system, i, v)` - all structures that have velocity
@@ -196,7 +196,7 @@ Every system structure is either directly one of these or holds a one.
 
 Composite systems are system structures that hold a system, called `base_system`, and some additional information to that system.
 
-In example [`CellSystem`](@ref) has following definition
+For example [`CellSystem`](@ref) has following definition
 
 ```julia
 mutable struct CellSystem{D, LU, TB, TC} <: AbstractCompositeSystem{D, LU}
@@ -208,11 +208,11 @@ mutable struct CellSystem{D, LU, TB, TC} <: AbstractCompositeSystem{D, LU}
 end
 ```
 
-and it adds `PeriodicCell` to a system that does not have cell.
+that adds `PeriodicCell` to a system that does not have cell.
 
-[`AtomicPropertySystem`](@ref) is other composite system. It takes in a `AbstractSimpleSystem` and adds atomic properties to it. That is properties like charge, custom mass, etc.
+[`AtomicPropertySystem`](@ref) is another composite system. It takes in a `AbstractSimpleSystem` and adds atomic properties to it. That is properties like charge, custom mass, etc.
 
-Finally is `GeneralSystem` that adds global features. Note that `GeneralSystem` should never be called directly. Call instead `generic_system`.
+Finally there is `GeneralSystem` that adds global features. Note that `GeneralSystem` should never be called directly. Call instead `generic_system`.
 
 
 ## Using Different Systems Directly Control What Information is Stored

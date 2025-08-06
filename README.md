@@ -62,7 +62,7 @@ atoms = [
     SimpleAtom(:H, [-1.8, 1.3, -0.6]u"Å"; mass=3.3u"u" )
 ]
 
-# You can add more features for existing atoms
+# You can add more features to existing atoms
 atoms = [
     SimpleAtom( atoms[1]; velocity=[0.1, 0.2, 0.0]u"Å/fs" , charge=-1.0u"q" )
     SimpleAtom( atoms[2]; velocity=[-0.2, 0.0, 0.1]u"Å/fs", charge=1.0u"q"  )

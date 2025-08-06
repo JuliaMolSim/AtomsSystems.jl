@@ -27,9 +27,9 @@ SimpleAtom( :O => [1.0, 0.0, 0.0]u"Å" )
 
 You can add extra atomkeys to an existing atom, by creating a new `SimpleAtom` and adding a keyword argument
 
-```@example atom
+```@repel atom
 sa = SimpleAtom(:H, [0.0, 0.0, 0.0]u"Å")
-SimpleAtom(sa; charge = 1.0u"q" ) # same as sa but with added charge
+SimpleAtom(sa; charge = 1.0u"q" ) # add charge
 ```
 
 
