@@ -114,3 +114,9 @@ function Base.append!(sys1::T, sys2::T) where{T<:AtomicPropertySystem}
     Base.append!(sys1.atom_properties, sys2.atom_properties)
     return sys1
 end
+
+function Base.deleteat!(sys::AtomicPropertySystem, i)
+    Base.deleteat!(sys.base_system, i)
+    Base.deleteat!(sys.atom_properties, i)
+    return sys
+end

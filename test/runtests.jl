@@ -1,7 +1,7 @@
 using AtomsBase
 using AtomsBaseTesting
 using AtomsSystems
-using LinearAlgebra: diagm, norm
+using LinearAlgebra: diagm, diag, norm
 using Rotations
 using Unitful
 using Test
@@ -37,6 +37,7 @@ include("Aqua.jl")
         @test length(ss) == count( species(sys, :) .== ChemicalSpecies(:H) ) +
                             count( species(sys, :) .== ChemicalSpecies(:He) )
         
+        sys = deepcopy(ref.system)
         ss = SimpleSystem(sys)
         deleteat!(ss, 3)
         @test length(ss) == length(sys) - 1
@@ -131,6 +132,15 @@ include("Aqua.jl")
         ss = AtomicPropertySystem(gsys, ChemicalSpecies(:H), ChemicalSpecies(:He))  
         @test length(ss) == count( species(gsys, :) .== ChemicalSpecies(:H) ) +
                             count( species(gsys, :) .== ChemicalSpecies(:He) )
+
+        sys = deepcopy(ref.system)
+        ss = AtomicPropertySystem(sys)
+        deleteat!(ss, 3)
+        @test length(ss) == length(sys) - 1
+        @test all( position(ss, 3) .≈ position(sys, 4) )
+        @test all( velocity(ss, 3) .≈ velocity(sys, 4) )
+        @test all( species(ss, 3) .=== species(sys, 4) )
+        @test all( AtomsBase.mass(ss, 3) .≈ AtomsBase.mass(sys, 4) )
     end
     @testset "CellSystemSystem" begin
         sys = CellSystem(ref.system)
@@ -183,6 +193,14 @@ include("Aqua.jl")
         @test cv[2] ≈ [0.0, 1.0, 0.0]u"Å"
         @test cv[3] ≈ [0.0, 0.0, 1.0]u"Å"
 
+
+        sys = CellSystem(ref.system)
+        deleteat!(sys, 3)
+        @test length(sys) == length(ref.system) - 1
+        @test all( position(sys, 3) .≈ position(ref.system, 4) )
+        @test all( velocity(sys, 3) .≈ velocity(ref.system, 4) )
+        @test all( species(sys, 3) .=== species(ref.system, 4) )
+        @test all( AtomsBase.mass(sys, 3) .≈ AtomsBase.mass(ref.system, 4) )
 
     end
     @testset "GeneralSystem" begin
@@ -255,6 +273,14 @@ include("Aqua.jl")
         @test all( velocity(ss, :) .≈ velocity(rsys, :) )
         @test all( species(ss, :) .=== species(rsys, :) )
         @test Set( atomkeys(ss) ) == Set( atomkeys(rsys) )
+
+        sys = generic_system(ref.system)
+        deleteat!(sys, 3)
+        @test length(sys) == length(ref.system) - 1
+        @test all( position(sys, 3) .≈ position(ref.system, 4) )
+        @test all( velocity(sys, 3) .≈ velocity(ref.system, 4) )
+        @test all( species(sys, 3) .=== species(ref.system, 4) )
+        @test all( AtomsBase.mass(sys, 3) .≈ AtomsBase.mass(ref.system, 4) )
     end
     @testset "Get Started test" begin
         sys = generic_system"""
@@ -410,7 +436,14 @@ include("Aqua.jl")
         dis2 = AtomsSystems.distance(sys, sys)
         @test dis2[1, 3] ≈ AtomsSystems.distance(sys, 1, 3)
         @test dis2[2, 4] ≈ AtomsSystems.distance(sys, 2, 4)
-         
+        
+        # rattle
+        sys = generic_system(ref.system)
+        sys2 = rattle_system(sys, 0.1u"Å")
+        @test all( diag( distance(sys, sys2) ) ) do x 
+           0.0u"Å" < x < 0.1u"Å"
+        end
+
     end
     @testset "SimpleAtom" begin
         sys = generic_system(ref.system)
