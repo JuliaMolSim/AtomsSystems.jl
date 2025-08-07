@@ -439,7 +439,7 @@ include("Aqua.jl")
         
         # rattle
         sys = generic_system(ref.system)
-        sys2 = rattle_system(sys, 0.1u"Å")
+        sys2 = rattle_positions(sys, 0.1u"Å")
         @test all( diag( distance(sys, sys2) ) ) do x 
            0.0u"Å" < x < 0.1u"Å"
         end
