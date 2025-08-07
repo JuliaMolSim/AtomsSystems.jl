@@ -20,8 +20,8 @@ rotate_system!(sys, rot)
 rotate_system(sys, rot)
 
 # rattle positions
-rattle_system(sys, 0.1)
-rattle_system!(sys, 0.1u"Å")
+rattle_positions(sys, 0.1)
+rattle_positions!(sys, 0.1u"Å")
 ```
 
 **Add system together or repeat them**
