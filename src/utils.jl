@@ -449,7 +449,7 @@ Repeat the system `sys` in all three dimensions by the factors `n`
 and return the new system.
 Original system is not modified.
 
-This works only for systems with `PeriodicCell` or type of `CellSystem{3}`.
+This works only for systems with `PeriodicCell`.
 
 # Examples
 ```julia
@@ -457,25 +457,41 @@ repeat(sys, (2, 2, 2)) # repeats the system in all three dimensions by a factor 
 repeat(sys, 2)         # same as above, but with a single integer
 ```
 """
-function Base.repeat(sys::CellSystem{3}, n::NTuple{3,<:Integer})
-    #TODO make this suppor more diminsions with generating function
-    @argcheck all( n .> 0 )
-    abc = cell_vectors(sys)
-    abc_n = n .* abc
-    cell = PeriodicCell(abc_n, periodicity(sys))
-    tsys = CellSystem(sys.base_system, cell)
-    nsys = deepcopy(tsys)
-    for i in 0:n[1]-1, j in 0:n[2]-1, k in 0:n[3]-1
-        if ! ( 0 == i == j == k )
-            r = sum( [i,j,k] .* abc )
-            tmp = translate_system(tsys, r)
-            append!(nsys, tmp)
-        end
+@generated function Base.repeat(sys::AbstractSystem{D}, n::NTuple{D,<:Integer}) where{D}
+    tmp = "CartesianIndices(( "
+    for i in 1:D
+        tmp *= "0:n[$i]-1, "
     end
-    return nsys
+    tmp *= "))"
+    ex = quote
+        @argcheck all( n .> 0 )
+        @argcheck isa(cell(sys), PeriodicCell)
+        abc = cell_vectors(sys)
+        abc_n = n .* abc
+        ncell = PeriodicCell(abc_n, periodicity(sys))
+        tsys = CellSystem(AtomicPropertySystem(sys), ncell)
+        nsys = deepcopy(tsys)
+        for I in $(Meta.parse(tmp))
+            ind = Tuple(I)
+            if !all( ind .== 0 )
+                r = sum( ind .* abc )
+                tmp = translate_system(tsys, r)
+                append!(nsys, tmp)
+            end 
+        end
+        return nsys
+    end
+    return ex
 end
 
-Base.repeat(sys::CellSystem{3}, n::Integer) = Base.repeat(sys, (n,n,n))
+@generated function Base.repeat(sys::AbstractSystem{D}, n::Integer) where{D}
+    tmp = "( "
+    for i in 1:D
+        tmp *= "n, "
+    end
+    tmp *= ")"
+    return :(Base.repeat(sys, $(Meta.parse(tmp))))
+end
 
 
 ##
