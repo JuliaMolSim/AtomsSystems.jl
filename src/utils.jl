@@ -490,7 +490,10 @@ The random vector is in random uniform direction and uniform length in the range
 If `q` is not a `Unitful.Length`, it is assumed to be in the unit of the positions in the system.
 """
 function rattle_positions!(sys::AbstractSystem{D}, q) where{D}
-    r0 = position(sys, 1)
+    # Generate unit vector of length q
+    tmp = position(sys, 1)
+    r1 = oneunit(tmp[1])
+    r0 = SVector{D}( r1 for i in 1:D )
     r0 = r0 ./ ustrip( norm(r0) )
     r0 *= isa(q, Unitful.Length) ? ustrip(unit(r0[1]), q) : q
     for i in 1:length(sys)
