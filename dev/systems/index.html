@@ -134,37 +134,37 @@ sys = generic_system(ref.system)</code></pre><pre class="documenter-example-outp
     charge            : -1 e
     extra_data        : 42
 
-    SimpleAtom(H,  [ -1.9045, 0.555567, -0.461518]u&quot;Å&quot;, [  -60478, 1.34334e+06, 1.66101e+06]u&quot;m s^-1&quot;)
-    SimpleAtom(H,  [-0.243036, 0.129328,  1.91215]u&quot;Å&quot;, [ -275404, -95311.3,  -692327]u&quot;m s^-1&quot;)
-    SimpleAtom(C,  [ 1.15995, -0.379389, 0.100057]u&quot;Å&quot;, [  867572,  -225971, -1.23501e+06]u&quot;m s^-1&quot;)
-    SimpleAtom(N,  [-1.32735,  1.95976,  1.64379]u&quot;Å&quot;, [  920631, -1.23809e+06,  -891385]u&quot;m s^-1&quot;)
-    SimpleAtom(He, [0.799096, -0.738352,  1.06583]u&quot;Å&quot;, [ -455798, -2.2945e+06,   639870]u&quot;m s^-1&quot;)
+    SimpleAtom(H,  [ 2.17338,  1.10139, 0.610363]u&quot;Å&quot;, [-1.14999e+06,   225364, 1.38584e+06]u&quot;m s^-1&quot;)
+    SimpleAtom(H,  [-0.933112, -0.577948, 0.694973]u&quot;Å&quot;, [  419251,   503665, 1.22172e+06]u&quot;m s^-1&quot;)
+    SimpleAtom(C,  [0.960831, 0.137721, -0.589946]u&quot;Å&quot;, [  238229,   762826,  -660649]u&quot;m s^-1&quot;)
+    SimpleAtom(N,  [-0.262679, -0.0459783, 0.859472]u&quot;Å&quot;, [-1.29129e+06,   934593,   184438]u&quot;m s^-1&quot;)
+    SimpleAtom(He, [-0.223434,    1.051, -0.312044]u&quot;Å&quot;, [ -230314,  -752174,  -920348]u&quot;m s^-1&quot;)
 </code></pre><p>As you can see it has a lot of features. If you only need species and positions you can use <a href="../end_index/#AtomsSystems.SimpleSystem"><code>SimpleSystem</code></a></p><pre><code class="language-julia hljs">SimpleSystem(sys)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">SimpleSystem(CHeH₂N, periodicity = FFF):
-    SimpleAtom(H,  [ -1.9045, 0.555567, -0.461518]u&quot;Å&quot;)
-    SimpleAtom(H,  [-0.243036, 0.129328,  1.91215]u&quot;Å&quot;)
-    SimpleAtom(C,  [ 1.15995, -0.379389, 0.100057]u&quot;Å&quot;)
-    SimpleAtom(N,  [-1.32735,  1.95976,  1.64379]u&quot;Å&quot;)
-    SimpleAtom(He, [0.799096, -0.738352,  1.06583]u&quot;Å&quot;)
+    SimpleAtom(H,  [ 2.17338,  1.10139, 0.610363]u&quot;Å&quot;)
+    SimpleAtom(H,  [-0.933112, -0.577948, 0.694973]u&quot;Å&quot;)
+    SimpleAtom(C,  [0.960831, 0.137721, -0.589946]u&quot;Å&quot;)
+    SimpleAtom(N,  [-0.262679, -0.0459783, 0.859472]u&quot;Å&quot;)
+    SimpleAtom(He, [-0.223434,    1.051, -0.312044]u&quot;Å&quot;)
 </code></pre><p>Similarly using <a href="../end_index/#AtomsSystems.SimpleVelocitySystem"><code>SimpleVelocitySystem</code></a> allows limiting to species, position and velocities</p><pre><code class="language-julia hljs">SimpleVelocitySystem(sys)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">SimpleVelocitySystem(CHeH₂N, periodicity = FFF):
-    SimpleAtom(H,  [ -1.9045, 0.555567, -0.461518]u&quot;Å&quot;, [  -60478, 1.34334e+06, 1.66101e+06]u&quot;m s^-1&quot;)
-    SimpleAtom(H,  [-0.243036, 0.129328,  1.91215]u&quot;Å&quot;, [ -275404, -95311.3,  -692327]u&quot;m s^-1&quot;)
-    SimpleAtom(C,  [ 1.15995, -0.379389, 0.100057]u&quot;Å&quot;, [  867572,  -225971, -1.23501e+06]u&quot;m s^-1&quot;)
-    SimpleAtom(N,  [-1.32735,  1.95976,  1.64379]u&quot;Å&quot;, [  920631, -1.23809e+06,  -891385]u&quot;m s^-1&quot;)
-    SimpleAtom(He, [0.799096, -0.738352,  1.06583]u&quot;Å&quot;, [ -455798, -2.2945e+06,   639870]u&quot;m s^-1&quot;)
+    SimpleAtom(H,  [ 2.17338,  1.10139, 0.610363]u&quot;Å&quot;, [-1.14999e+06,   225364, 1.38584e+06]u&quot;m s^-1&quot;)
+    SimpleAtom(H,  [-0.933112, -0.577948, 0.694973]u&quot;Å&quot;, [  419251,   503665, 1.22172e+06]u&quot;m s^-1&quot;)
+    SimpleAtom(C,  [0.960831, 0.137721, -0.589946]u&quot;Å&quot;, [  238229,   762826,  -660649]u&quot;m s^-1&quot;)
+    SimpleAtom(N,  [-0.262679, -0.0459783, 0.859472]u&quot;Å&quot;, [-1.29129e+06,   934593,   184438]u&quot;m s^-1&quot;)
+    SimpleAtom(He, [-0.223434,    1.051, -0.312044]u&quot;Å&quot;, [ -230314,  -752174,  -920348]u&quot;m s^-1&quot;)
 </code></pre><p><a href="../end_index/#AtomsSystems.AtomicPropertySystem"><code>AtomicPropertySystem</code></a> preserves all atomic properties, but ignores cell and global features</p><pre><code class="language-julia hljs">AtomicPropertySystem(sys)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">AtomicPropertySystem(CHeH₂N, periodicity = FFF):
-    SimpleAtom(H,  [ -1.9045, 0.555567, -0.461518]u&quot;Å&quot;, [  -60478, 1.34334e+06, 1.66101e+06]u&quot;m s^-1&quot;)
-    SimpleAtom(H,  [-0.243036, 0.129328,  1.91215]u&quot;Å&quot;, [ -275404, -95311.3,  -692327]u&quot;m s^-1&quot;)
-    SimpleAtom(C,  [ 1.15995, -0.379389, 0.100057]u&quot;Å&quot;, [  867572,  -225971, -1.23501e+06]u&quot;m s^-1&quot;)
-    SimpleAtom(N,  [-1.32735,  1.95976,  1.64379]u&quot;Å&quot;, [  920631, -1.23809e+06,  -891385]u&quot;m s^-1&quot;)
-    SimpleAtom(He, [0.799096, -0.738352,  1.06583]u&quot;Å&quot;, [ -455798, -2.2945e+06,   639870]u&quot;m s^-1&quot;)
+    SimpleAtom(H,  [ 2.17338,  1.10139, 0.610363]u&quot;Å&quot;, [-1.14999e+06,   225364, 1.38584e+06]u&quot;m s^-1&quot;)
+    SimpleAtom(H,  [-0.933112, -0.577948, 0.694973]u&quot;Å&quot;, [  419251,   503665, 1.22172e+06]u&quot;m s^-1&quot;)
+    SimpleAtom(C,  [0.960831, 0.137721, -0.589946]u&quot;Å&quot;, [  238229,   762826,  -660649]u&quot;m s^-1&quot;)
+    SimpleAtom(N,  [-0.262679, -0.0459783, 0.859472]u&quot;Å&quot;, [-1.29129e+06,   934593,   184438]u&quot;m s^-1&quot;)
+    SimpleAtom(He, [-0.223434,    1.051, -0.312044]u&quot;Å&quot;, [ -230314,  -752174,  -920348]u&quot;m s^-1&quot;)
 </code></pre><p><a href="../end_index/#AtomsSystems.CellSystem"><code>CellSystem</code></a> drops global features, but rest is preserved</p><pre><code class="language-julia hljs">CellSystem(sys)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">CellSystem(CHeH₂N, periodicity = TTF):
     cell_vectors      : [ 1.50304 0.850344 0.717239;
                           0.36113  1.00814 0.814712;
                           0.06828 0.381122  2.12908]u&quot;Å&quot;
 
-    SimpleAtom(H,  [ -1.9045, 0.555567, -0.461518]u&quot;Å&quot;, [  -60478, 1.34334e+06, 1.66101e+06]u&quot;m s^-1&quot;)
-    SimpleAtom(H,  [-0.243036, 0.129328,  1.91215]u&quot;Å&quot;, [ -275404, -95311.3,  -692327]u&quot;m s^-1&quot;)
-    SimpleAtom(C,  [ 1.15995, -0.379389, 0.100057]u&quot;Å&quot;, [  867572,  -225971, -1.23501e+06]u&quot;m s^-1&quot;)
-    SimpleAtom(N,  [-1.32735,  1.95976,  1.64379]u&quot;Å&quot;, [  920631, -1.23809e+06,  -891385]u&quot;m s^-1&quot;)
-    SimpleAtom(He, [0.799096, -0.738352,  1.06583]u&quot;Å&quot;, [ -455798, -2.2945e+06,   639870]u&quot;m s^-1&quot;)
-</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../atoms/">« Atoms</a><a class="docs-footer-nextpage" href="../utilities/">Utilities »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.14.1 on <span class="colophon-date" title="Saturday 6 September 2025 11:42">Saturday 6 September 2025</span>. Using Julia version 1.11.6.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+    SimpleAtom(H,  [ 2.17338,  1.10139, 0.610363]u&quot;Å&quot;, [-1.14999e+06,   225364, 1.38584e+06]u&quot;m s^-1&quot;)
+    SimpleAtom(H,  [-0.933112, -0.577948, 0.694973]u&quot;Å&quot;, [  419251,   503665, 1.22172e+06]u&quot;m s^-1&quot;)
+    SimpleAtom(C,  [0.960831, 0.137721, -0.589946]u&quot;Å&quot;, [  238229,   762826,  -660649]u&quot;m s^-1&quot;)
+    SimpleAtom(N,  [-0.262679, -0.0459783, 0.859472]u&quot;Å&quot;, [-1.29129e+06,   934593,   184438]u&quot;m s^-1&quot;)
+    SimpleAtom(He, [-0.223434,    1.051, -0.312044]u&quot;Å&quot;, [ -230314,  -752174,  -920348]u&quot;m s^-1&quot;)
+</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../atoms/">« Atoms</a><a class="docs-footer-nextpage" href="../utilities/">Utilities »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.14.1 on <span class="colophon-date" title="Saturday 6 September 2025 11:47">Saturday 6 September 2025</span>. Using Julia version 1.11.6.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
