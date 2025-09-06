@@ -406,6 +406,25 @@ include("Aqua.jl")
         @test c2[1] ≈ 3*c1[1]
         @test c2[2] ≈ 3*c1[2]
         @test c2[3] ≈ 3*c1[3]
+
+        # Repeat with 2D system
+        sys2d = generic_system"""
+           O     -2.1   0.6   
+           H     -1.4   0.4   
+           H     -1.8   1.3   
+        """
+        sys2d = generic_system(sys2d; cell_vectors = [
+           [5., 0.,]u"Å",
+           [0., 5.,]u"Å",]
+        )
+        sys2dn = repeat(sys2d, 2)
+        @test length(sys2dn) == 4 * length(sys2d)
+        @test all( species( sys2dn, :) .=== repeat( species(sys2d,:), 4) )
+        c1 = cell_vectors(sys2d)
+        c2 = cell_vectors(sys2dn)
+        @test c2[1] ≈ 2*c1[1]
+        @test c2[2] ≈ 2*c1[2]
+
         
         # wrap coordinates
         pbc = [true, true, true]
