@@ -449,7 +449,8 @@ Repeat the system `sys` in all three dimensions by the factors `n`
 and return the new system.
 Original system is not modified.
 
-This works only for systems with `PeriodicCell`.
+This works only for systems with `PeriodicCell` that is `CellSystem`.
+You can convert other systems to `CellSystem` with `CellSystem(sys)`.
 
 # Examples
 ```julia
@@ -457,7 +458,7 @@ repeat(sys, (2, 2, 2)) # repeats the system in all three dimensions by a factor 
 repeat(sys, 2)         # same as above, but with a single integer
 ```
 """
-@generated function Base.repeat(sys::AbstractSystem{D}, n::NTuple{D,<:Integer}) where{D}
+@generated function Base.repeat(sys::CellSystem{D}, n::NTuple{D,<:Integer}) where{D}
     tmp = "CartesianIndices(( "
     for i in 1:D
         tmp *= "0:n[$i]-1, "
@@ -465,11 +466,10 @@ repeat(sys, 2)         # same as above, but with a single integer
     tmp *= "))"
     ex = quote
         @argcheck all( n .> 0 )
-        @argcheck isa(cell(sys), PeriodicCell)
         abc = cell_vectors(sys)
         abc_n = n .* abc
         ncell = PeriodicCell(abc_n, periodicity(sys))
-        tsys = CellSystem(AtomicPropertySystem(sys), ncell)
+        tsys = CellSystem(sys.base_system, ncell)
         nsys = deepcopy(tsys)
         for I in $(Meta.parse(tmp))
             ind = Tuple(I)
@@ -484,7 +484,7 @@ repeat(sys, 2)         # same as above, but with a single integer
     return ex
 end
 
-@generated function Base.repeat(sys::AbstractSystem{D}, n::Integer) where{D}
+@generated function Base.repeat(sys::CellSystem{D}, n::Integer) where{D}
     tmp = "( "
     for i in 1:D
         tmp *= "n, "
