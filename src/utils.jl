@@ -228,14 +228,14 @@ Rotate the system `sys` by the rotation `r`.
 
 Note, this function does work only for isolated systems.
 """
-function rotate_system!(sys::AbstractIsolatedSystem, r::Rotation)
+function rotate_system!(sys::AbstractIsolatedSystem{D}, r::Rotation{D}) where {D}
     # does not work for all systems in general (e.g. FlexibleSystem)
     pos = position_as_matrix(sys, :)
     pos .= r * pos
     return sys
 end
 
-function rotate_system!(sys::GeneralSystem, r::Rotation)
+function rotate_system!(sys::GeneralSystem{D}, r::Rotation{D}) where {D}
     rotate_system!(sys.base_system, r)
     return sys
 end
@@ -246,8 +246,8 @@ end
 Copy system `sys` and rotate it by the rotation `r`.
 Orignal system is not modified.
 """
-function rotate_system(sys::AbstractSystem, r::Rotation)
-    tmp = deepcopy(sys)
+function rotate_system(sys::AbstractSystem{D}, r::Rotation{D}) where {D}
+    tmp = generic_system(sys)
     return rotate_system!(tmp, r)
 end
 
