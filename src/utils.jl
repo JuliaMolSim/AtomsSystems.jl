@@ -517,6 +517,7 @@ function rattle_positions!(sys::AbstractSystem{D}, q) where{D}
         r += rand(RotMatrix{D}) * r0 * rand()
         AtomsBase.set_position!(sys, i, r)
     end
+    return sys
 end
 
 function rattle_positions(sys::AbstractSystem, q)
