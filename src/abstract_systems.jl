@@ -24,9 +24,15 @@ Base.getindex(sys::AbstractCompositeSystem, ::Colon) = map(i->sys[i], 1:length(s
 
 
 """
-    add_systems(sys1::T, sys2::T) where {T<:AbstractIsolatedSystem}
+    add_systems(sys1::T, sys2::T)
     
 Append two systems of the same type, returning a new system.
+Added systems need to have same cell.
+
+Havin global features e.g. `GeneralSystem` do not work, due to no rule
+on how to add global features together. In this case you should first
+remove the global features and add the systems and then add the wanted
+global features.
 """
 function add_systems(sys1::T, sys2::T) where{T<:AbstractIsolatedSystem}
     tmp = deepcopy(sys1)
